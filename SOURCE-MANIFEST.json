@@ -56,6 +56,6 @@
   "src/test/offline/options-fixture.cjs": "fe3008b27b99ac1a2c83175af846804f06d5f9f930d8e9c48969bb9203867dda",
   "src/test/offline/widget-smoke.cjs": "2d3e398019a04b1319b4a9f5aa3bbb7775e9d9433335ea1a896df8ce764febfd",
   "src/test/resources/io/jenkins/plugins/smartselect/legacy-v01.xml": "30ef16c2789bc72ff98a9ec9921df8acdfbf758b2fda921237dd230001370e26",
-  "tests/test_publication_check.py": "fdc45e8ab7dd47655438133ffe94e43b8b1494a6bdf1b306ee2a457bfaa97b12",
+  "tests/test_publication_check.py": "fc5fe0842227ca177b2a968cc654588b61e21ff25779c0da54e91945030941b8",
   "verify-offline.sh": "30d5446077d8c4c9c125e187856fdeca61d178a7619861c7e88db8c1f0472b53"
 }

@@ -51,7 +51,7 @@ class PublicationCheckTest(unittest.TestCase):
 
     def test_source_allowlist_excludes_outputs_and_private_files(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             for name in ("pom.xml", "README.md", "src/main/java/Sample.java",
                          ".env", "target/app.hpi", "output/private.log",
                          "src/main/resources/secret.key", ".git/config"):
@@ -63,7 +63,7 @@ class PublicationCheckTest(unittest.TestCase):
 
     def test_path_outside_root_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             with self.assertRaises(ValueError):
                 checker.safe_relative(root.parent / "outside.txt", root)
 
