@@ -9,3 +9,10 @@ Local verification passed all 37 Java/Jenkins tests without skips, zero SpotBugs
 The community identifier in the supplied account profile is jaychang1989. Jira and, for manual release, Artifactory first-login reports must include that identifier before the official application can truthfully attest that all Required findings are fixed. Reports can lag a successful login by about an hour. No password is stored in this repository.
 
 The second official check against revision 15d15f58b6334e9af38e3320fea59d73303ca906 reported only two Required items: the Jira and Artifactory first-login records. All 14 code/configuration Required findings were resolved. A remaining CSS-theme warning is also addressed in the following revision. Two informational README recommendations remain intentionally visible until hosting. No application checkbox claims the two account requirements have passed. Hosted CI results must be read independently.
+
+
+## Account/CI update
+
+The maintainer reports successful first logins. The public Jira report now includes jaychang1989. The Artifactory report still needs its next synchronization; this is not replaced by the maintainer's login screenshot or a local success flag.
+
+Hosted CI run [40114364286](https://github.com/jaychang1989/smart-select-parameter-plugin/actions/runs/40114364286) passed all three jobs: Linux Java 21, Linux Java 25 and Windows Java 21. The [Jenkins security scan](https://github.com/jaychang1989/smart-select-parameter-plugin/actions/runs/40114364566) also passed. The Windows temporary-path alias test issue has been fixed and verified by the successful hosted run.

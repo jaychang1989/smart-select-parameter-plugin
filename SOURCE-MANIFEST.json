@@ -22,7 +22,7 @@
   "examples/Jenkinsfile-rest": "1efd60e9382a40e75f6934edc321bc9bf03fddd2c817e93312abe257a5610743",
   "pom.xml": "9101c5ac3b9c6530f9031bd5bcf78c0a50c53792cea91b5fc03fa187165a93ba",
   "publishing/README.md": "9269df57ec4f23728bb16fe08afe6c293a9b7e5d4e48cf49c8a6675fef8e9914",
-  "publishing/check-status.md": "8d41386f1f5542b225747fd24843b4d0424ee3ec2b4ec6d9b0f47825e03aa6c8",
+  "publishing/check-status.md": "8120580531b88e54dbce0937c46313d07283196503bedbb400f7c81e15786eea",
   "publishing/hosting-request.md": "c2ec3f71bcdc99cf0d8b9b577f0c1e64b21c842911d692c9fe108cc7562396ab",
   "publishing/maintainers.json": "9cd9798e7b60bd371de3334f89e3ad36ba8daf4902956082a7ad6a0ec7ecaa50",
   "publishing/templates/cd.yaml.disabled": "46a9386e30495faed810727bc5ad9db1485c4ff912da445e93549c4195837b8c",
