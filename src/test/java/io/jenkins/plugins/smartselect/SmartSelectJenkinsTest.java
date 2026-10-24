@@ -1,10 +1,10 @@
 package io.jenkins.plugins.smartselect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.cli.CLICommandInvoker;
 import hudson.model.FreeStyleProject;
@@ -14,17 +14,24 @@ import java.net.URL;
 import java.util.List;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
-import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlButton;
+import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlInput;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.util.NameValuePair;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
+@WithJenkins
 public class SmartSelectJenkinsTest {
-    @Rule public JenkinsRule jenkins = new JenkinsRule();
+    private JenkinsRule jenkins;
+
+    @BeforeEach
+    void setUp(JenkinsRule instance) {
+        this.jenkins = instance;
+    }
 
     private SmartSelectParameterDefinition parameter(String name, String mode) {
         SmartSelectParameterDefinition parameter = new SmartSelectParameterDefinition(name);
@@ -35,7 +42,8 @@ public class SmartSelectJenkinsTest {
         return parameter;
     }
 
-    @Test public void configurationSurvivesSaveAndReload() throws Exception {
+    @Test
+    public void configurationSurvivesSaveAndReload() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         SmartSelectParameterDefinition single = parameter("ENV", "SINGLE");
         single.setSearchable(false);
@@ -52,7 +60,8 @@ public class SmartSelectJenkinsTest {
         assertFalse(((SmartSelectParameterDefinition) saved.getParameterDefinition("ENV")).isSearchable());
     }
 
-    @Test public void buildFormSubmitsSelectedValues() throws Exception {
+    @Test
+    public void buildFormSubmitsSelectedValues() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         project.addProperty(new ParametersDefinitionProperty(parameter("SERVICES", "MULTI")));
         try (JenkinsRule.WebClient client = jenkins.createWebClient().withJavaScriptEnabled(true)) {
@@ -78,18 +87,23 @@ public class SmartSelectJenkinsTest {
             jenkins.waitUntilNoActivity();
             assertNotNull(project.getLastBuild());
             jenkins.assertBuildStatusSuccess(project.getLastBuild());
-            assertEquals("price,admin", project.getLastBuild().getAction(ParametersAction.class)
-                    .getParameter("SERVICES").getValue());
+            assertEquals(
+                    "price,admin",
+                    project.getLastBuild()
+                            .getAction(ParametersAction.class)
+                            .getParameter("SERVICES")
+                            .getValue());
         }
     }
 
-    @Test public void apiBuildAcceptsSelectionAndUsesMissingParameterDefault() throws Exception {
+    @Test
+    public void apiBuildAcceptsSelectionAndUsesMissingParameterDefault() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        project.addProperty(new ParametersDefinitionProperty(
-                parameter("SERVICES", "MULTI"), parameter("ENV", "SINGLE")));
+        project.addProperty(
+                new ParametersDefinitionProperty(parameter("SERVICES", "MULTI"), parameter("ENV", "SINGLE")));
         try (JenkinsRule.WebClient client = jenkins.createWebClient()) {
-            WebRequest request = new WebRequest(new URL(jenkins.getURL(),
-                    project.getUrl() + "buildWithParameters?delay=0sec"), HttpMethod.POST);
+            WebRequest request = new WebRequest(
+                    new URL(jenkins.getURL(), project.getUrl() + "buildWithParameters?delay=0sec"), HttpMethod.POST);
             request.setRequestParameters(List.of(new NameValuePair("SERVICES", "price,admin")));
             client.getPage(client.addCrumb(request));
             jenkins.waitUntilNoActivity();
@@ -101,17 +115,21 @@ public class SmartSelectJenkinsTest {
         }
     }
 
-    @Test public void apiRejectsUnknownChoicesAndMultipleSingleSelections() throws Exception {
+    @Test
+    public void apiRejectsUnknownChoicesAndMultipleSingleSelections() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         project.addProperty(new ParametersDefinitionProperty(parameter("ENV", "SINGLE")));
         try (JenkinsRule.WebClient client = jenkins.createWebClient()) {
             client.getOptions().setThrowExceptionOnFailingStatusCode(false);
             for (String submitted : List.of("unauthorized", "price,vehicle")) {
-                WebRequest request = new WebRequest(new URL(jenkins.getURL(),
-                        project.getUrl() + "buildWithParameters?delay=0sec"), HttpMethod.POST);
+                WebRequest request = new WebRequest(
+                        new URL(jenkins.getURL(), project.getUrl() + "buildWithParameters?delay=0sec"),
+                        HttpMethod.POST);
                 request.setRequestParameters(List.of(new NameValuePair("ENV", submitted)));
-                int status = client.getPage(client.addCrumb(request)).getWebResponse().getStatusCode();
-                assertTrue("Invalid selection must be rejected", status >= 400);
+                int status = client.getPage(client.addCrumb(request))
+                        .getWebResponse()
+                        .getStatusCode();
+                assertTrue(status >= 400, "Invalid selection must be rejected");
                 jenkins.waitUntilNoActivity();
                 assertNull(project.getLastBuild());
                 assertTrue(jenkins.jenkins.getQueue().isEmpty());
@@ -119,14 +137,19 @@ public class SmartSelectJenkinsTest {
         }
     }
 
-    @Test public void cliBuildPassesSelectionToBuild() throws Exception {
+    @Test
+    public void cliBuildPassesSelectionToBuild() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         project.addProperty(new ParametersDefinitionProperty(parameter("SERVICES", "MULTI")));
         CLICommandInvoker.Result result = new CLICommandInvoker(jenkins, "build")
                 .invokeWithArgs(project.getName(), "-p", "SERVICES=price,admin", "-s");
-        assertEquals(result.stderr(), 0, result.returnCode());
+        assertEquals(0, result.returnCode(), result.stderr());
         jenkins.assertBuildStatusSuccess(project.getLastBuild());
-        assertEquals("price,admin", project.getLastBuild().getAction(ParametersAction.class)
-                .getParameter("SERVICES").getValue());
+        assertEquals(
+                "price,admin",
+                project.getLastBuild()
+                        .getAction(ParametersAction.class)
+                        .getParameter("SERVICES")
+                        .getValue());
     }
 }

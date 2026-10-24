@@ -18,3 +18,5 @@ __pycache__/
 *.key
 *.dpapi
 .DS_Store
+
+work/

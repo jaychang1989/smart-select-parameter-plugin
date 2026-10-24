@@ -17,6 +17,7 @@ import net.sf.json.JSONSerializer;
 /** Server-side GET with administrator-approved origins, no redirects and bounded resources. */
 public final class RestOptionSource {
     private static final int MAX_BYTES = 1_048_576;
+
     private RestOptionSource() {}
 
     public static URI validate(String url, String allowedOrigins) {
@@ -24,7 +25,8 @@ public final class RestOptionSource {
             URI uri = URI.create(url);
             String origin = origin(uri);
             boolean allowed = Arrays.stream((allowedOrigins == null ? "" : allowedOrigins).split("\\R"))
-                    .map(String::trim).filter(line -> !line.isEmpty())
+                    .map(String::trim)
+                    .filter(line -> !line.isEmpty())
                     .anyMatch(line -> origin.equals(origin(URI.create(line))));
             if (!allowed) throw new IllegalArgumentException("REST 数据源地址尚未获管理员授权");
             return uri;
@@ -35,8 +37,10 @@ public final class RestOptionSource {
 
     static String origin(URI uri) {
         String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
-        if ((!scheme.equals("https") && !scheme.equals("http")) || uri.getHost() == null
-                || uri.getUserInfo() != null || uri.getFragment() != null)
+        if ((!scheme.equals("https") && !scheme.equals("http"))
+                || uri.getHost() == null
+                || uri.getUserInfo() != null
+                || uri.getFragment() != null)
             throw new IllegalArgumentException("Only HTTP(S) origins without credentials or fragments are allowed");
         int port = uri.getPort() < 0 ? (scheme.equals("https") ? 443 : 80) : uri.getPort();
         if (port < 1 || port > 65535) throw new IllegalArgumentException("Invalid port");
@@ -55,12 +59,16 @@ public final class RestOptionSource {
             if (token != null && !token.isEmpty()) connection.setRequestProperty("Authorization", "Bearer " + token);
             if (connection.getResponseCode() != 200) throw new IllegalArgumentException("REST 数据源返回非成功状态");
             String contentType = connection.getContentType();
-            if (contentType == null || !contentType.toLowerCase(Locale.ROOT).matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?"))
+            if (contentType == null
+                    || !contentType
+                            .toLowerCase(Locale.ROOT)
+                            .matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?"))
                 throw new IllegalArgumentException("REST 数据源必须返回 JSON");
             if (connection.getContentLengthLong() > MAX_BYTES) throw new IllegalArgumentException("REST 数据源响应超过 1 MiB");
             long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
             byte[] bytes;
-            try (InputStream input = connection.getInputStream(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            try (InputStream input = connection.getInputStream();
+                    ByteArrayOutputStream output = new ByteArrayOutputStream()) {
                 byte[] buffer = new byte[8192];
                 int count;
                 while ((count = input.read(buffer)) != -1) {
@@ -73,7 +81,8 @@ public final class RestOptionSource {
             JSON json = JSONSerializer.toJSON(new String(bytes, StandardCharsets.UTF_8));
             Object items = json;
             if (itemsPath != null && !itemsPath.isBlank()) {
-                if (!itemsPath.matches("[a-zA-Z0-9_-]+(?:\\.[a-zA-Z0-9_-]+)*")) throw new IllegalArgumentException("Invalid items path");
+                if (!itemsPath.matches("[a-zA-Z0-9_-]+(?:\\.[a-zA-Z0-9_-]+)*"))
+                    throw new IllegalArgumentException("Invalid items path");
                 for (String key : itemsPath.split("\\.")) {
                     if (!(items instanceof JSONObject object) || !object.containsKey(key))
                         throw new IllegalArgumentException("REST 数据源中找不到选项数组");

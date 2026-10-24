@@ -21,7 +21,7 @@ The current widget and several configuration/error messages are in Simplified Ch
 
 ## Requirements and installation
 
-Jenkins **2.547** or newer, with Java **21** or a newer Java version supported by that controller. Development uses Maven 3.9+, Java 21, Node.js 24 and Python 3.12. Pipeline components are test dependencies only; the controller running a Pipeline example needs Pipeline installed.
+Jenkins **2.555.3** or newer, with Java **21** or a newer Java version supported by that controller. Development uses Maven 3.9+, Java 21, Node.js 24 and Python 3.12. Pipeline components are test dependencies only; the controller running a Pipeline example needs Pipeline installed.
 
 Run `mvn -B -ntp clean verify`, then install `target/smart-select-parameter.hpi` through **Manage Jenkins → Plugins → Advanced settings → Deploy Plugin**. Follow Jenkins' activation/restart instructions. Update-center availability is pending hosting and a first official release.
 

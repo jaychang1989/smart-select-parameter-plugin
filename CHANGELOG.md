@@ -5,7 +5,10 @@
 - Add English documentation, a Chinese guide, contribution/security policies, CI and hosting preparation material.
 - Define explicit source/issue/CI metadata for a proposed repository; public creation and hosting remain pending.
 - Provide local source-distribution checks and exclude controller records, generated binaries and private files.
-- Preserve production Java/JavaScript behavior from the 1.0.1 compatibility snapshot.
+- Preserve parameter behavior from the compatibility snapshot while raising the public-release baseline to Jenkins 2.555.3, as required for new hosting requests.
+- Use the required current parent POM, synchronized BOM and strict build/import checks; migrate maintained tests to JUnit Jupiter.
+- Add official Jenkins security scanning, future hosting-team CODEOWNERS and Java 25 CI coverage; use a theme-aware popup shadow.
+- Enforce formatting rather than skipping it. Existing deployed local compatibility builds are not changed.
 
 ## Local milestones
 

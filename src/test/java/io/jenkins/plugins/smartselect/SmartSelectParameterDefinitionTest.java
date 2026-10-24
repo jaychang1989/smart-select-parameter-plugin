@@ -1,14 +1,14 @@
 package io.jenkins.plugins.smartselect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.model.StringParameterValue;
 import java.util.List;
 import net.sf.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest2;
 
 public class SmartSelectParameterDefinitionTest {
@@ -18,29 +18,36 @@ public class SmartSelectParameterDefinitionTest {
         return parameter;
     }
 
-    @Test public void defaultAndFormSubmission() {
+    @Test
+    public void defaultAndFormSubmission() {
         SmartSelectParameterDefinition parameter = configured();
         parameter.setDefaultValues(List.of("price", "vehicle"));
         assertEquals("price,vehicle", parameter.getDefaultParameterValue().getValue());
-        assertEquals("vehicle,admin", ((StringParameterValue) parameter.createValue((StaplerRequest2) null,
-                JSONObject.fromObject("{\"value\":\"vehicle,admin\"}"))).getValue());
+        assertEquals(
+                "vehicle,admin",
+                ((StringParameterValue) parameter.createValue(
+                                (StaplerRequest2) null, JSONObject.fromObject("{\"value\":\"vehicle,admin\"}")))
+                        .getValue());
     }
 
-    @Test public void supportsSingleModeAndDefaultFirst() {
+    @Test
+    public void supportsSingleModeAndDefaultFirst() {
         SmartSelectParameterDefinition parameter = configured();
         parameter.setMode("SINGLE");
         assertEquals("price", parameter.getDefaultParameterValue().getValue());
         assertThrows(IllegalArgumentException.class, () -> parameter.createValue("price,vehicle"));
     }
 
-    @Test public void rejectsTamperingAndTracksValidation() {
+    @Test
+    public void rejectsTamperingAndTracksValidation() {
         SmartSelectParameterDefinition parameter = configured();
         assertTrue(parameter.isValid(new StringParameterValue("SERVICES", "price,vehicle")));
         assertFalse(parameter.isValid(new StringParameterValue("SERVICES", "unauthorized")));
         assertThrows(IllegalArgumentException.class, () -> parameter.createValue("unauthorized"));
     }
 
-    @Test public void keepDefaultsOnCopyForRebuild() {
+    @Test
+    public void keepDefaultsOnCopyForRebuild() {
         SmartSelectParameterDefinition parameter = configured();
         SmartSelectParameterDefinition copy = (SmartSelectParameterDefinition)
                 parameter.copyWithDefaultValue(new StringParameterValue("SERVICES", "vehicle,admin"));

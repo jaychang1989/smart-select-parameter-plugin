@@ -18,7 +18,7 @@ The scope is data-only choices, rather than a general Groovy/rich-HTML parameter
 
 ## GitHub and Jenkins project users
 
-GitHub / Jenkins project users: @jaychang1989 Jaychang1989
+GitHub / Jenkins project users: @jaychang1989 jaychang1989
 
 The Jenkins community identifier was supplied by the maintainer and has not been independently authenticated during this preparation. No password is stored here.
 

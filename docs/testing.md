@@ -1,20 +1,21 @@
-# Testing scope
+# Testing and hosting status
 
-Use Java 21 and Maven 3.9+. Jenkins tests start temporary local controllers and loopback fixtures, not a deployment controller. Node smoke checks cover selection, labels, 2,000 choices, page bounds, and keyboard navigation.
+## Current source
 
-The suite includes form/API/CLI submission, the actual example Jenkinsfile, administrator-only origin changes, reload permissions, encrypted token persistence, no fallback, rejected redirects/large/malformed/slow responses, submitted-parent validation, cycles and a legacy V0.1 XML fixture.
+The public application targets Jenkins 2.555.3 and uses the minimum parent POM required by the official hosting checker. The existing parameter tests have been migrated to JUnit Jupiter without removing test cases. Strict bundled-artifact, legacy import and obsolete-override checks are enabled. Spotless formatting is enforced.
 
-Tokens secret-for-test, bearer-test-secret and local-test-token are intentional loopback test fixtures, not usable credentials. Do not replace them with real tokens.
+Run the commands in the README. Tests start isolated local controllers and loopback HTTP fixtures, never an existing deployment controller. Test tokens are deliberate dummy values, not usable credentials. Preserve that boundary in new tests.
 
-GitHub CI is configured for Linux/Windows Java 21 and Linux Java 25. The initial private upload intentionally skips those jobs; remote CI has not been verified. The root Jenkinsfile is for ci.jenkins.io after hosting. Format checking is inherited as skipped and must not be reported as passed.
+GitHub CI covers Linux/Windows Java 21 and Linux Java 25; the root Jenkinsfile also declares Java 25 for ci.jenkins.io after hosting. An official Jenkins security scan workflow and future hosting-team CODEOWNERS are included. Workflow configuration is not proof that a remote run succeeded.
 
-Publication checks detect recognizable leaks and unsafe source content, not every possible secret or vulnerability. They do not verify copyright ownership. Refer to the local preparation report for this run's actual results.
+## Local validation history
 
-## Local preparation result (2026-10-24)
+The 2026-10-24 preparation snapshot passed 37 Java/Jenkins tests, 10 Python publication-check tests and Node syntax/interaction checks. Formatting was skipped in that earlier snapshot. Those results do not describe every later source change.
 
-On Windows with Java 21 and Maven 3.9.11, the 1.0.2-SNAPSHOT preparation copy passed all 37 Java/Jenkins tests without skips and reported zero SpotBugs defects or analysis errors. The 10 Python publication-check tests and Node interaction/syntax checks also passed. All five prepared YAML files parsed successfully. A local static browser example submitted price,admin and produced the documentation screenshot; it did not connect to a controller.
+On 2026-10-25 the migrated test suite again passed all 37 tests without skips. The full Maven verification also passed: SpotBugs reported zero defects/errors and Spotless kept all maintained Java sources and the POM clean. Official findings are tracked in publishing/check-status.md. Runtime parameter behavior is retained; changes are required publication metadata, test framework, formatting and theme-aware popup shadow. Already deployed local compatibility builds are not changed.
 
-Production Java, JavaScript and CSS match the source snapshot. A global-configuration help example was changed from a generic intranet hostname to a reserved example.com hostname; no network/validation logic was changed. Logs and machine-specific evidence remain outside the public source archive.
+## Official gate
 
-The official hosting checker and remote CI have not run because the proposed repository is not public. A community identifier was subsequently supplied by the maintainer, but has not been independently authenticated. Release-mode local checks intentionally fail on those incomplete metadata/approval gates and on the snapshot version. These pending results are not counted as passing tests.
+The repository is public. The first official hosting-check run identified 16 Required findings. Code/configuration fixes are being rechecked; the remaining account requirements must be satisfied through actual community-account first logins to Jira and Artifactory. No password is kept in this repository, and hosting approval is not claimed.
 
+The source-publication checker is only a local distribution guard, not the official hosting checker, exhaustive secret scanner, legal review or security certification.

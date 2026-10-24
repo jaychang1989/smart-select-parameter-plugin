@@ -14,13 +14,23 @@ public final class SelectOption implements Serializable {
         this.label = label;
     }
 
-    public String getValue() { return value; }
-    public String getLabel() { return label; }
-
-    @Override public boolean equals(Object other) {
-        return other instanceof SelectOption option
-                && Objects.equals(value, option.value) && Objects.equals(label, option.label);
+    public String getValue() {
+        return value;
     }
 
-    @Override public int hashCode() { return Objects.hash(value, label); }
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof SelectOption option
+                && Objects.equals(value, option.value)
+                && Objects.equals(label, option.label);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, label);
+    }
 }
