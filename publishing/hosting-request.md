@@ -4,7 +4,7 @@
 
 https://github.com/jaychang1989/smart-select-parameter-plugin
 
-The source repository now exists privately at this URL. Confirm ownership and explicitly approve public disclosure before changing its visibility. The official hosting checker needs public source.
+This source repository is public. The maintainer authorized public disclosure on 2026-10-25. Official hosting approval is still pending.
 
 ## New Repository Name
 
@@ -28,7 +28,7 @@ The Jenkins community identifier was supplied by the maintainer and has not been
 - Group ID: io.jenkins.plugins
 - Name: Smart Select Parameter
 - Proposed canonical repository: jenkinsci/smart-select-parameter-plugin, after approval only
-- License: MIT; owner/publication consent still needs confirmation
+- License: MIT; maintainer authorized publication on 2026-10-25
 
 ## Related plugins and distinction
 

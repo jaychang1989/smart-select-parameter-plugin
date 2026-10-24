@@ -1,6 +1,6 @@
 # Publication preparation
 
-This is local source preparation, not approved hosting or a published plugin. GitHub lookup identified jaychang1989; the maintainer supplied Jenkins community identifier Jaychang1989. Only the identifier is stored, without any password or login verification. The source was subsequently uploaded to a private GitHub repository. No public repository, hosting request or official release was created. The initial upload intentionally skips GitHub Actions; remote CI remains unverified.
+This is local source preparation, not approved hosting or a published plugin. GitHub lookup identified jaychang1989; the maintainer supplied Jenkins community identifier Jaychang1989. Only the identifier is stored, without any password or login verification. The repository was made public on 2026-10-25 at the maintainer's explicit request. Official hosting and an update-center release are still pending. The initial private upload skipped GitHub Actions; current CI results must be checked separately.
 
 ## Prepared
 
@@ -8,9 +8,9 @@ Naming/coordinates, explicit Maven source metadata, English/Chinese guides, secu
 
 ## Remaining gates
 
-1. Confirm copyright ownership, permission to share the code/dependencies and the proposed repository name.
+1. The maintainer explicitly authorized public disclosure on 2026-10-25 under the existing MIT license. This records the owner's instruction, not an independent legal assessment.
 2. Confirm the supplied community identifier Jaychang1989 and activate its account email if required. Its identifier is recorded in maintainers.json; do not add any password/token. Official hosting checks will verify the account.
-3. Approve creation of the public repository and push sanitized source. Confirm the prefilled Maven URLs point to that real repository.
+3. Public source is available at the repository URL in pom.xml. Keep the source, examples and documentation free of credentials and private controller records.
 4. Run the official hosting checker on public source and fix Required findings. It reads GitHub rather than an unpublished local folder and requires Java 25+, Maven and GitHub authentication.
 5. Submit the hosting request and address review, including baseline/LTS feedback.
 6. After approval, change Maven metadata to the canonical jenkinsci repository, enable official CI and obtain release permissions before the first official release.
