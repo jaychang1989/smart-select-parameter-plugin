@@ -1,6 +1,6 @@
 # Publication preparation
 
-This is local source preparation, not approved hosting or a published plugin. GitHub lookup identified jaychang1989; the maintainer supplied Jenkins community identifier jaychang1989. Only the identifier is stored, without any password or login verification. The repository was made public on 2026-10-25 at the maintainer's explicit request. Official hosting and an update-center release are still pending. The initial private upload skipped GitHub Actions; current CI results must be checked separately.
+This is local source preparation, not approved hosting or a published plugin. GitHub lookup identified jaychang1989; the maintainer supplied Jenkins community identifier jaychang1989. Only the identifier is stored, without any password or login verification. The repository was made public on 2026-10-25 at the maintainer's explicit request. The official application has been submitted as [#5409](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409); human hosting approval and an update-center release are still pending. The initial private upload skipped GitHub Actions; current CI results must be checked separately.
 
 ## Prepared
 
@@ -48,3 +48,7 @@ The initial plan uses manual release after permission is granted. --no-cd matche
 - [Releases](https://www.jenkins.io/doc/developer/publishing/releasing/)
 - [Optional CD](https://www.jenkins.io/doc/developer/publishing/releasing-cd/)
 
+
+## Submitted application
+
+The official checker passed with no Required findings after both community first-login records synchronized. Application #5409 is open; see check-status.md for evidence and remaining human-review/release steps.

@@ -1,4 +1,8 @@
-# Hosting request draft — do not submit yet
+# Hosting request — submitted
+
+Submitted application: https://github.com/jenkins-infra/repository-permissions-updater/issues/5409
+
+Official hosting approval is pending. The draft below records the request context.
 
 ## Repository URL
 

@@ -12,5 +12,7 @@
   "repository_created_private": true,
   "public_disclosure_authorized_on": "2026-10-25",
   "repository_visibility": "public",
-  "hosting_request_submitted": false
+  "hosting_request_submitted": true,
+  "hosting_request_url": "https://github.com/jenkins-infra/repository-permissions-updater/issues/5409",
+  "community_first_login_checks_passed_on": "2026-10-25"
 }

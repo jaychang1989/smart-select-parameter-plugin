@@ -1,18 +1,21 @@
-# Hosting check status (2026-10-25)
+# Hosting application status (2026-10-25)
 
-The maintainer repository is public. Official Jenkins hosting is not yet approved, and no update-center release has been published.
+## Submitted
 
-The official checker was built from jenkins-infra/repository-permissions-updater commit 84c6de2390972f1a6592ef0372e4d9e272780d1b and run using Java 25. Its first run reported 16 Required findings. This revision addresses the code/configuration findings: parent/minimum baseline, synchronized BOM, strict build checks, removal of obsolete developers metadata, canonical future homepage, ignored work directory, Jenkins security scanning and future hosting-team CODEOWNERS. Maintained tests now use JUnit Jupiter. Java 25 is declared in Jenkins CI, and the popup shadow is theme-aware.
+The official hosting application is [repository-permissions-updater #5409](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409), submitted by jaychang1989. A standard /hosting re-check comment was posted to start the official bot workflow. This is an application, not approval, repository transfer or an update-center release.
 
-Local verification passed all 37 Java/Jenkins tests without skips, zero SpotBugs defects/errors and enforced Spotless checks. The 10 Python source-publication tests and Node checks passed as well. Existing deployed compatibility builds were not modified.
+## Official pre-submission check
 
-The community identifier in the supplied account profile is jaychang1989. Jira and, for manual release, Artifactory first-login reports must include that identifier before the official application can truthfully attest that all Required findings are fixed. Reports can lag a successful login by about an hour. No password is stored in this repository.
+The unmodified official checker at commit 84c6de2390972f1a6592ef0372e4d9e272780d1b was built and run with Java 25. After fixes and account-report synchronization it exited 0 and reported that the repository passes the automated hosting checks. All Required findings were resolved; two informational README recommendations remain for the eventual hosted state.
 
-The second official check against revision 15d15f58b6334e9af38e3320fea59d73303ca906 reported only two Required items: the Jira and Artifactory first-login records. All 14 code/configuration Required findings were resolved. A remaining CSS-theme warning is also addressed in the following revision. Two informational README recommendations remain intentionally visible until hosting. No application checkbox claims the two account requirements have passed. Hosted CI results must be read independently.
+Jira and Artifactory reports both include the community identifier jaychang1989. No password was stored or included in the application.
 
+## Validation
 
-## Account/CI update
+Local verification passed 37 Java/Jenkins tests without skips, zero SpotBugs defects/errors and enforced Spotless checks. The 10 Python publication tests and Node checks passed. Hosted CI run [40114364286](https://github.com/jaychang1989/smart-select-parameter-plugin/actions/runs/40114364286) passed Linux Java 21/25 and Windows Java 21. The [Jenkins security scan](https://github.com/jaychang1989/smart-select-parameter-plugin/actions/runs/40114364566) also passed.
 
-The maintainer reports successful first logins. The public Jira report now includes jaychang1989. The Artifactory report still needs its next synchronization; this is not replaced by the maintainer's login screenshot or a local success flag.
+The public baseline is Jenkins 2.555.3, with the required current parent POM, synchronized BOM, strict checks, maintained tests migrated to JUnit Jupiter, security scanning, dependency updates and future hosting-team CODEOWNERS. Existing deployed compatibility builds were not changed.
 
-Hosted CI run [40114364286](https://github.com/jaychang1989/smart-select-parameter-plugin/actions/runs/40114364286) passed all three jobs: Linux Java 21, Linux Java 25 and Windows Java 21. The [Jenkins security scan](https://github.com/jaychang1989/smart-select-parameter-plugin/actions/runs/40114364566) also passed. The Windows temporary-path alias test issue has been fixed and verified by the successful hosted run.
+The first official run had 16 Required findings. Fourteen were code/configuration fixes; the two account first-login records became available after the maintainer logged in and the official reports synchronized. An initial Windows CI test issue involving temporary-path aliases was fixed and verified by the subsequent successful hosted run.
+
+Human hosting review, canonical repository transfer and release permissions remain pending. Do not set hosting_approved merely because this issue is open or an automated check passed.
