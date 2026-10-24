@@ -4,6 +4,8 @@ Compact searchable single- and multi-select Jenkins build parameters with option
 
 **Unreleased publication candidate: 1.0.2-SNAPSHOT.** This source repository is public with the maintainer's authorization. Official Jenkins hosting and the first update-center release remain pending; a public source repository is not itself an approved plugin release.
 
+[Hosting application #5409](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409): automated hosting checks complete; human review pending.
+
 [中文说明](README.zh-CN.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Publication checklist](publishing/README.md)
 
 ## Features

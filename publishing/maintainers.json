@@ -14,5 +14,7 @@
   "repository_visibility": "public",
   "hosting_request_submitted": true,
   "hosting_request_url": "https://github.com/jenkins-infra/repository-permissions-updater/issues/5409",
-  "community_first_login_checks_passed_on": "2026-10-25"
+  "community_first_login_checks_passed_on": "2026-10-25",
+  "official_bot_check_complete": true,
+  "official_bot_check_url": "https://github.com/jenkins-infra/repository-permissions-updater/issues/5409#issuecomment-6390775484"
 }

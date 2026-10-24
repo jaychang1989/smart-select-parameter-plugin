@@ -6,7 +6,7 @@ The official hosting application is [repository-permissions-updater #5409](https
 
 ## Official pre-submission check
 
-The unmodified official checker at commit 84c6de2390972f1a6592ef0372e4d9e272780d1b was built and run with Java 25. After fixes and account-report synchronization it exited 0 and reported that the repository passes the automated hosting checks. All Required findings were resolved; two informational README recommendations remain for the eventual hosted state.
+The unmodified official checker at commit 84c6de2390972f1a6592ef0372e4d9e272780d1b was built and run with Java 25. After fixes and account-report synchronization it exited 0 and reported that the repository passes the automated hosting checks. All Required findings were resolved. The remaining README organization recommendations were then addressed, and the official bot applied bot-check-complete with no outstanding findings.
 
 Jira and Artifactory reports both include the community identifier jaychang1989. No password was stored or included in the application.
 
@@ -19,3 +19,7 @@ The public baseline is Jenkins 2.555.3, with the required current parent POM, sy
 The first official run had 16 Required findings. Fourteen were code/configuration fixes; the two account first-login records became available after the maintainer logged in and the official reports synchronized. An initial Windows CI test issue involving temporary-path aliases was fixed and verified by the subsequent successful hosted run.
 
 Human hosting review, canonical repository transfer and release permissions remain pending. Do not set hosting_approved merely because this issue is open or an automated check passed.
+
+## Official bot result
+
+The [official recheck](https://github.com/jenkins-infra/repository-permissions-updater/actions/runs/40142003370) completed successfully. The [bot comment](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409#issuecomment-6390775484) confirms everything is in order for human review. The issue is open with hosting-request and bot-check-complete labels; needs-fix was removed. Human approval and release permissions remain pending.
