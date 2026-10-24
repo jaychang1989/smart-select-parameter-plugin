@@ -1,0 +1,19 @@
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'SERVICES', mode: 'MULTI', searchable: true,
+            choices: ['price', 'vehicle', 'admin'], defaultValues: ['price', 'vehicle'])
+        smartSelect(name: 'ENV', mode: 'SINGLE', searchable: false,
+            choices: ['dev', 'pre', 'release'], defaultValues: 'pre')
+        smartSelect(name: 'LABELLED', mode: 'SINGLE',
+            options: [[value: 'admin', label: '管理服务']], defaultValues: 'admin')
+    }
+    stages {
+        stage('Read selection') {
+            steps {
+                echo "SELECTED=${params.SERVICES};ENV=${params.ENV}"
+                echo "LABELLED=${params.LABELLED}"
+            }
+        }
+    }
+}

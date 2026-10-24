@@ -1,0 +1,59 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
+  <st:adjunct includes="io.jenkins.plugins.smartselect.smart-select" />
+  <j:set var="smartSelectView" value="${it.view}" />
+  <j:set var="escapeEntryTitleAndDescription" value="false" />
+  <f:entry title="${h.escape(it.name)}" description="${it.formattedDescription}">
+    <div name="parameter" class="smart-select-parameter" data-mode="${it.mode}" data-remote="${it.remote}" data-error="${smartSelectView.error}" data-depends-on="${it.dependsOn}">
+      <input type="hidden" name="name" value="${it.name}" />
+      <input type="hidden" name="value" class="smart-select-value" value="${smartSelectView.defaultValue}" />
+      <div class="smart-select-widget">
+        <button type="button" class="smart-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="smart-select-summary">请选择</span>
+          <span class="smart-select-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="smart-select-popup" hidden="hidden">
+          <j:if test="${it.searchable}">
+            <div class="smart-select-search-wrap">
+              <input type="search" class="smart-select-search" placeholder="搜索选项..." aria-label="搜索选项" autocomplete="off" />
+            </div>
+          </j:if>
+          <j:if test="${it.multi}">
+            <div class="smart-select-toolbar">
+              <span class="smart-select-count"></span>
+              <div>
+                <button type="button" class="smart-select-select-all">全选结果</button>
+                <button type="button" class="smart-select-clear">清空</button>
+              </div>
+            </div>
+          </j:if>
+          <div class="smart-select-options" role="listbox" aria-multiselectable="${it.multi}">
+            <j:choose>
+            <j:when test="${smartSelectView.options.size() &gt; 100}">
+              <input type="hidden" class="smart-select-data" value="${smartSelectView.optionsJson}" />
+            </j:when>
+            <j:otherwise>
+            <j:forEach var="choice" items="${smartSelectView.options}">
+              <button type="button" class="smart-select-option" role="option" data-value="${choice.value}" aria-selected="${smartSelectView.isSelected(choice.value)}">
+                <span class="smart-select-indicator" aria-hidden="true"></span>
+                <span class="smart-select-label">${choice.label}</span>
+              </button>
+            </j:forEach>
+            </j:otherwise>
+            </j:choose>
+          </div>
+          <div class="smart-select-pagination" hidden="hidden">
+            <button type="button" class="smart-select-previous">上一页</button>
+            <span class="smart-select-page-info" aria-live="polite"></span>
+            <button type="button" class="smart-select-next">下一页</button>
+          </div>
+          <div class="smart-select-empty" hidden="hidden">未找到匹配选项</div>
+        </div>
+      </div>
+      <div class="smart-select-error" role="status" aria-live="polite">${smartSelectView.error}</div>
+      <j:if test="${it.remote}">
+        <button type="button" class="smart-select-refresh">重新读取选项</button>
+      </j:if>
+    </div>
+  </f:entry>
+</j:jelly>

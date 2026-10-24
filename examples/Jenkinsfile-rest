@@ -1,0 +1,19 @@
+// Replace this example origin with your service and authorize it in Manage Jenkins -> System.
+// Keep the single-quoted URL: ${ENV} is expanded by Smart Select, not by Groovy.
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'ENV', mode: 'SINGLE',
+            options: [[value:'dev', label:'开发环境'], [value:'release', label:'正式环境']])
+        smartSelect(name: 'SERVICES', mode: 'MULTI', dependsOn: 'ENV',
+            restUrl: 'https://services.example.com/options?env=${ENV}',
+            restItemsPath: 'data.items', cacheSeconds: 30)
+    }
+    stages {
+        stage('Read selection') {
+            steps {
+                echo "Environment=${params.ENV}; Services=${params.SERVICES}"
+            }
+        }
+    }
+}

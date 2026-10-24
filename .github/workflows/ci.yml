@@ -1,0 +1,50 @@
+name: ci
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            java: '21'
+          - os: windows-latest
+            java: '21'
+          - os: ubuntu-latest
+            java: '25'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Check source distribution
+        run: python scripts/publication_check.py
+      - name: Test the publication checker
+        run: python -m unittest discover -s tests -v
+      - name: Verify JavaScript syntax
+        run: node --check src/main/resources/io/jenkins/plugins/smartselect/smart-select.js
+      - name: Verify selection interactions
+        run: node src/test/offline/widget-smoke.cjs
+      - name: Verify Jenkins integration and static analysis
+        run: mvn -B -ntp clean verify

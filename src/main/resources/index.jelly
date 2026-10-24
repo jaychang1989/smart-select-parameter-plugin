@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+  <div>Lightweight searchable Jenkins build parameter with single-select and multi-select modes.</div>
+</j:jelly>
