@@ -19,11 +19,11 @@ The current widget and several configuration/error messages are in Simplified Ch
 
 ![Multi-select example](docs/images/multi-select.png)
 
-## Requirements and installation
+## Usage and development
 
-Jenkins **2.555.3** or newer, with Java **21** or a newer Java version supported by that controller. Development uses Maven 3.9+, Java 21, Node.js 24 and Python 3.12. Pipeline components are test dependencies only; the controller running a Pipeline example needs Pipeline installed.
+Build prerequisites and local development instructions are in the [development guide](docs/development.md). Once an official release is available, the plugin site will show compatibility requirements for each version. Pipeline components are test dependencies only; a controller running a Pipeline example needs Pipeline installed.
 
-Run `mvn -B -ntp clean verify`, then install `target/smart-select-parameter.hpi` through **Manage Jenkins → Plugins → Advanced settings → Deploy Plugin**. Follow Jenkins' activation/restart instructions. Update-center availability is pending hosting and a first official release.
+Validate the source with `mvn -B -ntp clean verify`. Official update-center availability is pending hosting and a first release.
 
 Add **Smart Select Parameter** to a parameterized job. Existing plain choices configurations remain supported. Back up the previous plugin and job configurations before upgrading; a downgrade may also need old configurations restored.
 
