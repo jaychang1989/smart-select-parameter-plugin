@@ -8,4 +8,4 @@ Local verification passed all 37 Java/Jenkins tests without skips, zero SpotBugs
 
 The community identifier in the supplied account profile is jaychang1989. Jira and, for manual release, Artifactory first-login reports must include that identifier before the official application can truthfully attest that all Required findings are fixed. Reports can lag a successful login by about an hour. No password is stored in this repository.
 
-A fresh official check must run against this pushed revision. Its result is not replaced by local build success, and hosted CI results must be read independently.
+The second official check against revision 15d15f58b6334e9af38e3320fea59d73303ca906 reported only two Required items: the Jira and Artifactory first-login records. All 14 code/configuration Required findings were resolved. A remaining CSS-theme warning is also addressed in the following revision. Two informational README recommendations remain intentionally visible until hosting. No application checkbox claims the two account requirements have passed. Hosted CI results must be read independently.
