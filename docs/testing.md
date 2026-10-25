@@ -16,6 +16,8 @@ On 2026-10-25 the migrated test suite again passed all 37 tests without skips. T
 
 ## Official gate
 
+The English-default UI follow-up on 2026-10-25 passed a full `mvn -B -ntp clean verify`: 45 tests (including generated resource/Jelly checks), no failures/errors/skips, zero SpotBugs defects/errors and enforced formatting checks. The 10 Python publication checks and Node syntax/interaction checks also passed. `LocalizationJenkinsTest` verifies English, French fallback to English and Simplified Chinese on real Jenkins build/configuration/system pages, including selection counts, pagination, reload failures, and protected server validation/options responses. It does not schedule builds.
+
 The repository is public. The first official hosting-check run identified 16 Required findings. Code/configuration fixes are being rechecked; the remaining account requirements must be satisfied through actual community-account first logins to Jira and Artifactory. No password is kept in this repository, and hosting approval is not claimed.
 
 The source-publication checker is only a local distribution guard, not the official hosting checker, exhaustive secret scanner, legal review or security certification.

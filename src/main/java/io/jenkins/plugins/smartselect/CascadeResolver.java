@@ -24,8 +24,9 @@ final class CascadeResolver {
     private static List<SelectOption> resolve(
             SmartSelectParameterDefinition parameter, Job<?, ?> job, Map<String, String> submitted, Set<String> path) {
         if (parameter.getDependencies().isEmpty()) return parameter.getResolvedOptions();
-        if (job == null || !parameter.isRemote()) throw new IllegalArgumentException("联动参数需要任务上下文和 REST 数据源");
-        if (path.size() >= 16 || !path.add(parameter.getName())) throw new IllegalArgumentException("参数存在循环依赖或依赖层级过深");
+        if (job == null || !parameter.isRemote()) throw new IllegalArgumentException(Messages.CascadeContext());
+        if (path.size() >= 16 || !path.add(parameter.getName()))
+            throw new IllegalArgumentException(Messages.CascadeCycle());
         try {
             ParametersDefinitionProperty property = job.getProperty(ParametersDefinitionProperty.class);
             String url = parameter.getRestUrl();
@@ -33,7 +34,7 @@ final class CascadeResolver {
             for (String name : parameter.getDependencies()) {
                 String token = "${" + name + "}";
                 if (queryStart < 0 || url.indexOf(token) <= queryStart)
-                    throw new IllegalArgumentException("上级参数占位符只能用于 REST 查询参数");
+                    throw new IllegalArgumentException(Messages.CascadePlaceholder());
                 ParameterDefinition definition = property == null ? null : property.getParameterDefinition(name);
                 String value;
                 if (definition instanceof SmartSelectParameterDefinition parent) {
@@ -47,18 +48,19 @@ final class CascadeResolver {
                     ParameterValue checked = submitted.containsKey(name)
                             ? simple.createValue(submitted.get(name))
                             : simple.getDefaultParameterValue();
-                    if (checked == null || !simple.isValid(checked)) throw new IllegalArgumentException("上级参数无效");
+                    if (checked == null || !simple.isValid(checked))
+                        throw new IllegalArgumentException(Messages.ParentInvalid());
                     if (!(checked.getValue() instanceof String
                             || checked.getValue() instanceof Boolean
                             || checked.getValue() instanceof Number))
-                        throw new IllegalArgumentException("不支持使用敏感或复杂参数作为上级参数");
+                        throw new IllegalArgumentException(Messages.ParentSensitive());
                     value = String.valueOf(checked.getValue());
-                    if (value.length() > 2048) throw new IllegalArgumentException("上级参数过长");
-                } else throw new IllegalArgumentException("上级参数不存在或不支持联动");
+                    if (value.length() > 2048) throw new IllegalArgumentException(Messages.ParentLength());
+                } else throw new IllegalArgumentException(Messages.ParentMissing());
                 if (value == null || value.isBlank()) return List.of();
                 url = url.replace(token, URLEncoder.encode(value, StandardCharsets.UTF_8));
             }
-            if (url.contains("${")) throw new IllegalArgumentException("REST 地址包含未声明的上级参数");
+            if (url.contains("${")) throw new IllegalArgumentException(Messages.ParentUndeclared());
             return parameter.remoteOptions(url);
         } finally {
             path.remove(parameter.getName());

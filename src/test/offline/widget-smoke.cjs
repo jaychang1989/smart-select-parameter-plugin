@@ -109,7 +109,7 @@ vm.runInNewContext(fs.readFileSync(file, 'utf8'), {
 }, { filename: file });
 
 assert.equal(multi.value.value, 'price,vehicle');
-assert.equal(multi.summary.textContent, 'price、vehicle');
+assert.equal(multi.summary.textContent, 'price, vehicle');
 multi.trigger.click();
 assert.equal(multi.popup.hidden, false);
 multi.search.value = 'job';
@@ -153,7 +153,7 @@ assert.equal(labeled.options.filter(o => !o.hidden).length, 1);
 assert.equal(labeled.options.find(o => !o.hidden).dataset.value, 'admin');
 labeled.selectAll.click();
 assert.equal(labeled.value.value, 'price,admin');
-assert.equal(labeled.summary.textContent, '报价服务、管理服务');
+assert.equal(labeled.summary.textContent, '报价服务, 管理服务');
 assert.ok(large.container.children.length <= 100, 'Long lists must bound attached option nodes');
 large.trigger.click();
 large.selectAll.click();

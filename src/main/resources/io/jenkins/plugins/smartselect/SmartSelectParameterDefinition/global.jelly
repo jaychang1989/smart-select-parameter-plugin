@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  <f:section title="Smart Select REST 数据源授权">
-    <f:entry title="允许访问的来源地址" field="allowedRestOrigins" description="仅管理员可修改。每行一个完整来源，例如 https://services.example.com 或 http://services.example.com:8080。该来源下的所有路径均获授权，请仅添加可信服务；建议使用 HTTPS。留空将禁止所有远程请求。">
+  <f:section title="${%Section}">
+    <f:entry title="${%Origins}" field="allowedRestOrigins" description="${%OriginsHelp}">
       <f:textarea />
     </f:entry>
   </f:section>

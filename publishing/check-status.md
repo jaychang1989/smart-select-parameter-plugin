@@ -23,3 +23,11 @@ Human hosting review, canonical repository transfer and release permissions rema
 ## Official bot result
 
 The [official recheck](https://github.com/jenkins-infra/repository-permissions-updater/actions/runs/40142003370) completed successfully. The [bot comment](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409#issuecomment-6390775484) confirms everything is in order for human review. The issue is open with hosting-request and bot-check-complete labels; needs-fix was removed. Human approval and release permissions remain pending.
+
+## Security review and English UI follow-up
+
+On 2026-10-25 the [official security scan result](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409#issuecomment-6396379540) reported no dangerous findings, and the application received `security-audit-done`. This supersedes the earlier failed scan notifications; it does not grant hosting approval or release permissions.
+
+[The hosting reviewer requested the complete UI in English by default](https://github.com/jenkins-infra/repository-permissions-updater/issues/5409#issuecomment-6396390167). The source now uses English default resource bundles for job/system configuration, build controls, dynamic status messages and server validation/errors, with Simplified Chinese translations selected by Jenkins locale. Other languages fall back to English. Request-language integration coverage checks English, unsupported-language fallback and Simplified Chinese on actual Jenkins pages, including JavaScript interaction and protected validation/options endpoints.
+
+Full local Maven verification for this follow-up passed 45 tests with no failures/errors/skips, zero SpotBugs defects/errors and enforced formatting. Python publication tests (10) and Node syntax/interaction checks also passed. Human hosting approval and a first update-center release remain pending.

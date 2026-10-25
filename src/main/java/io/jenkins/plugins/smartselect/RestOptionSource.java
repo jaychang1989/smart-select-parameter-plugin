@@ -28,10 +28,10 @@ public final class RestOptionSource {
                     .map(String::trim)
                     .filter(line -> !line.isEmpty())
                     .anyMatch(line -> origin.equals(origin(URI.create(line))));
-            if (!allowed) throw new IllegalArgumentException("REST 数据源地址尚未获管理员授权");
+            if (!allowed) throw new IllegalArgumentException(Messages.RestOriginUnauthorized());
             return uri;
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("REST 数据源地址无效或未获管理员授权");
+            throw new IllegalArgumentException(Messages.RestOriginInvalid());
         }
     }
 
@@ -57,14 +57,14 @@ public final class RestOptionSource {
             connection.setInstanceFollowRedirects(false);
             connection.setRequestProperty("Accept", "application/json");
             if (token != null && !token.isEmpty()) connection.setRequestProperty("Authorization", "Bearer " + token);
-            if (connection.getResponseCode() != 200) throw new IllegalArgumentException("REST 数据源返回非成功状态");
+            if (connection.getResponseCode() != 200) throw new IllegalArgumentException(Messages.RestStatus());
             String contentType = connection.getContentType();
             if (contentType == null
                     || !contentType
                             .toLowerCase(Locale.ROOT)
                             .matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?"))
-                throw new IllegalArgumentException("REST 数据源必须返回 JSON");
-            if (connection.getContentLengthLong() > MAX_BYTES) throw new IllegalArgumentException("REST 数据源响应超过 1 MiB");
+                throw new IllegalArgumentException(Messages.RestJson());
+            if (connection.getContentLengthLong() > MAX_BYTES) throw new IllegalArgumentException(Messages.RestSize());
             long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
             byte[] bytes;
             try (InputStream input = connection.getInputStream();
@@ -73,7 +73,7 @@ public final class RestOptionSource {
                 int count;
                 while ((count = input.read(buffer)) != -1) {
                     if (output.size() + count > MAX_BYTES || System.nanoTime() > deadline)
-                        throw new IllegalArgumentException("REST 数据源响应过大或超时");
+                        throw new IllegalArgumentException(Messages.RestTimeout());
                     output.write(buffer, 0, count);
                 }
                 bytes = output.toByteArray();
@@ -85,14 +85,14 @@ public final class RestOptionSource {
                     throw new IllegalArgumentException("Invalid items path");
                 for (String key : itemsPath.split("\\.")) {
                     if (!(items instanceof JSONObject object) || !object.containsKey(key))
-                        throw new IllegalArgumentException("REST 数据源中找不到选项数组");
+                        throw new IllegalArgumentException(Messages.RestArray());
                     items = object.get(key);
                 }
             }
             return OptionCodec.parse(items);
         } catch (java.io.IOException | RuntimeException e) {
             // Never expose endpoint URLs, response bodies, bearer tokens or transport exception details.
-            throw new IllegalArgumentException("无法读取 REST 选项，请检查管理员授权、接口状态和 JSON 格式");
+            throw new IllegalArgumentException(Messages.RestRead());
         } finally {
             if (connection != null) connection.disconnect();
         }

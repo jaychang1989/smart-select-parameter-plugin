@@ -8,6 +8,9 @@
     if (widget.dataset.smartSelectReady === "true") return;
     widget.dataset.smartSelectReady = "true";
 
+    // Rendered by Jenkins for the current request locale; English is the fallback.
+    const message = (key, fallback, ...args) =>
+      (widget.dataset['i18n' + key] || fallback).replace(/\{(\d+)\}/g, (match, index) => args[index] ?? match);
     const multiple = widget.dataset.mode === "MULTI";
     const hidden = widget.querySelector(".smart-select-value");
     const trigger = widget.querySelector(".smart-select-trigger");
@@ -29,7 +32,7 @@
     const listId = `smart-select-list-${++nextId}`;
     if (container) {
       container.id = listId;
-      container.setAttribute('aria-label', `${parameterName || '参数'}选项`);
+      container.setAttribute('aria-label', message('OptionsLabel', '{0} options', parameterName || message('Parameter', 'Parameter')));
     }
     trigger.setAttribute('aria-controls', listId);
     if (search) search.setAttribute('aria-controls', listId);
@@ -76,7 +79,7 @@
       if (pagination) pagination.hidden = all.length <= pageSize;
       if (previousPage) previousPage.disabled = pageIndex === 0;
       if (nextPage) nextPage.disabled = pageIndex >= pages - 1;
-      if (pageInfo) pageInfo.textContent = `第 ${pageIndex + 1}/${pages} 页 · ${visible.length} 项结果`;
+      if (pageInfo) pageInfo.textContent = message('PageInfo', 'Page {0}/{1} - {2} results', pageIndex + 1, pages, visible.length);
     }
 
     function focusOption(option) {
@@ -100,16 +103,16 @@
         option.tabIndex = option.dataset.value === activeValue ? 0 : -1;
       });
       if (!values.length) {
-        summary.textContent = "请选择";
+        summary.textContent = message('Placeholder', 'Select...');
         summary.classList.add("is-placeholder");
       } else {
         summary.classList.remove("is-placeholder");
         summary.textContent = values.length <= 2
-          ? values.map(labelFor).join("、")
-          : `已选择 ${values.length} 项`;
+          ? values.map(labelFor).join(message('LabelSeparator', ', '))
+          : message('Selected', '{0} selected', values.length);
       }
-      if (count) count.textContent = `已选 ${values.length} / 共 ${all.length} 项`;
-      if (parameterName) trigger.setAttribute('aria-label', `${parameterName}：${summary.textContent}`);
+      if (count) count.textContent = message('Count', '{0} / {1} selected', values.length, all.length);
+      if (parameterName) trigger.setAttribute('aria-label', `${parameterName}: ${summary.textContent}`);
       if (previousValue !== hidden.value) hidden.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
@@ -219,14 +222,14 @@
         if (needed.has(name) && field && field.type !== 'password') parents[name] = field.type === 'checkbox' ? String(field.checked) : field.value;
       });
       if (waiting) {
-        selected.clear(); setState('waiting', '请先选择上级参数'); sync(); close();
+        selected.clear(); setState('waiting', message('Waiting', 'Select parent parameters first')); sync(); close();
         return;
       }
-      setState('loading', '正在读取选项…');
+      setState('loading', message('Loading', 'Loading options...'));
       const timeout = setTimeout(() => {
         if (sequence !== requestSequence) return;
         controller.abort(); selected.clear(); close();
-        setState('error', '读取选项超时，请重试'); sync();
+        setState('error', message('Timeout', 'Loading options timed out. Please try again.')); sync();
       }, 10000);
       return Promise.resolve().then(() => {
         if (sequence !== requestSequence) throw new Error('Stale request');
@@ -260,7 +263,7 @@
         clearTimeout(timeout);
         if (sequence !== requestSequence || error.name === 'AbortError') return;
         selected.clear(); close();
-        setState('error', '选项暂不可用，请检查数据源配置后重试');
+        setState('error', message('Unavailable', 'Options are unavailable. Check the data source configuration and try again.'));
         sync();
       });
     }

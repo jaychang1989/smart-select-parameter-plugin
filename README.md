@@ -17,9 +17,7 @@ Compact searchable single- and multi-select Jenkins build parameters with option
 - Up to 2,000 choices; at most 100 option buttons attached per page. Select-all includes matching choices on other pages.
 - Keyboard navigation, named controls, list position information, stale-response isolation, loading/error states and retry.
 
-The current widget and several configuration/error messages are in Simplified Chinese. Complete English UI localization remains a follow-up item. This documentation does not claim an accessibility or security certification.
-
-![Multi-select example](docs/images/multi-select.png)
+The complete UI defaults to English, including configuration, build controls, validation, and loading/error messages. Simplified Chinese translations follow the Jenkins request locale; other locales fall back to English. This documentation does not claim an accessibility or security certification.
 
 ## Usage and development
 
@@ -61,7 +59,7 @@ The integration test executes [examples/Jenkinsfile](examples/Jenkinsfile). A [R
 
 ## REST options
 
-An administrator first approves the origin in **Manage Jenkins → System → Smart Select REST 数据源授权**, one origin per line, such as `https://services.example.com`. Authorization includes all paths on that scheme/host/effective port. Approve only trusted services. No origin is approved by default.
+An administrator first approves the origin in **Manage Jenkins → System → Smart Select REST source authorization**, one origin per line, such as `https://services.example.com`. Authorization includes all paths on that scheme/host/effective port. Approve only trusted services. No origin is approved by default.
 
 Configure the full REST URL. Responses must be JSON: a root array of strings or label/value objects, or an object containing such an array:
 

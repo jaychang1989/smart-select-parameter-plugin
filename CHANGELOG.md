@@ -2,6 +2,7 @@
 
 ## 1.0.2-SNAPSHOT — publication preparation (unreleased)
 
+- Default the complete UI to English and provide Simplified Chinese resource bundles for job/system configuration, selection controls, dynamic status messages and server validation/errors.
 - Add English documentation, a Chinese guide, contribution/security policies, CI and hosting preparation material.
 - Define explicit source/issue/CI metadata for a proposed repository; public creation and hosting remain pending.
 - Provide local source-distribution checks and exclude controller records, generated binaries and private files.

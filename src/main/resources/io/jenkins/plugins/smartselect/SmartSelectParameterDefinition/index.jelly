@@ -4,26 +4,27 @@
   <j:set var="smartSelectView" value="${it.view}" />
   <j:set var="escapeEntryTitleAndDescription" value="false" />
   <f:entry title="${h.escape(it.name)}" description="${it.formattedDescription}">
-    <div name="parameter" class="smart-select-parameter" data-mode="${it.mode}" data-remote="${it.remote}" data-error="${smartSelectView.error}" data-depends-on="${it.dependsOn}">
+    <div name="parameter" class="smart-select-parameter" data-mode="${it.mode}" data-remote="${it.remote}" data-error="${smartSelectView.error}" data-depends-on="${it.dependsOn}"
+      data-i18n-placeholder="${%Placeholder}" data-i18n-options-label="${%OptionsLabel}" data-i18n-parameter="${%Parameter}" data-i18n-page-info="${%PageInfo}" data-i18n-selected="${%Selected}" data-i18n-count="${%Count}" data-i18n-label-separator="${%LabelSeparator}" data-i18n-waiting="${%Waiting}" data-i18n-loading="${%Loading}" data-i18n-timeout="${%Timeout}" data-i18n-unavailable="${%Unavailable}">
       <input type="hidden" name="name" value="${it.name}" />
       <input type="hidden" name="value" class="smart-select-value" value="${smartSelectView.defaultValue}" />
       <div class="smart-select-widget">
         <button type="button" class="smart-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="smart-select-summary">请选择</span>
+          <span class="smart-select-summary">${%Placeholder}</span>
           <span class="smart-select-chevron" aria-hidden="true">⌄</span>
         </button>
         <div class="smart-select-popup" hidden="hidden">
           <j:if test="${it.searchable}">
             <div class="smart-select-search-wrap">
-              <input type="search" class="smart-select-search" placeholder="搜索选项..." aria-label="搜索选项" autocomplete="off" />
+              <input type="search" class="smart-select-search" placeholder="${%SearchPlaceholder}" aria-label="${%SearchLabel}" autocomplete="off" />
             </div>
           </j:if>
           <j:if test="${it.multi}">
             <div class="smart-select-toolbar">
               <span class="smart-select-count"></span>
               <div>
-                <button type="button" class="smart-select-select-all">全选结果</button>
-                <button type="button" class="smart-select-clear">清空</button>
+                <button type="button" class="smart-select-select-all">${%SelectAll}</button>
+                <button type="button" class="smart-select-clear">${%Clear}</button>
               </div>
             </div>
           </j:if>
@@ -43,16 +44,16 @@
             </j:choose>
           </div>
           <div class="smart-select-pagination" hidden="hidden">
-            <button type="button" class="smart-select-previous">上一页</button>
+            <button type="button" class="smart-select-previous">${%Previous}</button>
             <span class="smart-select-page-info" aria-live="polite"></span>
-            <button type="button" class="smart-select-next">下一页</button>
+            <button type="button" class="smart-select-next">${%Next}</button>
           </div>
-          <div class="smart-select-empty" hidden="hidden">未找到匹配选项</div>
+          <div class="smart-select-empty" hidden="hidden">${%Empty}</div>
         </div>
       </div>
       <div class="smart-select-error" role="status" aria-live="polite">${smartSelectView.error}</div>
       <j:if test="${it.remote}">
-        <button type="button" class="smart-select-refresh">重新读取选项</button>
+        <button type="button" class="smart-select-refresh">${%Refresh}</button>
       </j:if>
     </div>
   </f:entry>

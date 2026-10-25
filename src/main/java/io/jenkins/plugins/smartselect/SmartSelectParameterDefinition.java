@@ -58,7 +58,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
                 || names.stream()
                         .anyMatch(name ->
                                 name.equals(getName()) || !name.matches("[\\p{L}\\p{N}_][\\p{L}\\p{N}_.-]{0,127}")))
-            throw new IllegalArgumentException("上级参数名称无效，最多支持 8 个且不能依赖自身");
+            throw new IllegalArgumentException(Messages.DependenciesInvalid());
         dependsOn = String.join(",", names);
         restSnapshot = null;
     }
@@ -75,7 +75,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
         List<String> allowed = resolved.stream().map(SelectOption::getValue).toList();
         if (getDependencies().isEmpty()) return SelectionCodec.join(effectiveDefaults(allowed));
         List<String> defaults = defaultValues.stream().filter(allowed::contains).toList();
-        if (!isMulti() && defaults.size() > 1) throw new IllegalArgumentException("单选参数不能配置多个默认值");
+        if (!isMulti() && defaults.size() > 1) throw new IllegalArgumentException(Messages.SingleDefaults());
         if (defaults.isEmpty() && !isMulti() && !allowed.isEmpty()) defaults = List.of(allowed.get(0));
         return SelectionCodec.join(defaults);
     }
@@ -185,7 +185,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
                     resolved.stream().map(SelectOption::getValue).toList()));
             return new OptionView(resolved, defaults, "");
         } catch (IllegalArgumentException e) {
-            return new OptionView(List.of(), "", "选项暂不可用，请检查数据源或默认值配置后重试");
+            return new OptionView(List.of(), "", Messages.ViewUnavailable());
         }
     }
 
@@ -304,7 +304,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
     }
 
     public StringParameterValue createValue(String submitted) {
-        if (!getDependencies().isEmpty()) throw new IllegalArgumentException("联动参数需要同时提供上级参数上下文");
+        if (!getDependencies().isEmpty()) throw new IllegalArgumentException(Messages.ParentsRequired());
         List<String> values = SelectionCodec.selectedFrom(submitted, allowedValues(), isMulti());
         return new StringParameterValue(getName(), SelectionCodec.join(values), getDescription());
     }
@@ -323,15 +323,15 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
             java.util.Collection<?> entries = root instanceof net.sf.json.JSONArray array ? array : List.of(root);
             for (Object entry : entries) {
                 if (!(entry instanceof JSONObject object) || !(object.get("name") instanceof String name))
-                    throw new IllegalArgumentException("参数表单格式无效");
+                    throw new IllegalArgumentException(Messages.FormInvalid());
                 Object rawValue = object.get("value");
                 if (rawValue instanceof String || rawValue instanceof Boolean || rawValue instanceof Number) {
                     if (submitted.putIfAbsent(name, rawValue.toString()) != null)
-                        throw new IllegalArgumentException("参数只能提交一次");
+                        throw new IllegalArgumentException(Messages.ParameterDuplicate());
                 }
             }
         } catch (jakarta.servlet.ServletException e) {
-            throw new IllegalArgumentException("无法读取参数表单");
+            throw new IllegalArgumentException(Messages.FormRead());
         }
         return contextualValue(req.findAncestorObject(Job.class), submitted, value == null ? "" : (String) value);
     }
@@ -347,7 +347,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
     @Override
     public StringParameterValue createValue(StaplerRequest2 request) {
         String[] values = request.getParameterValues(getName());
-        if (values != null && values.length != 1) throw new IllegalArgumentException("参数只能提交一次");
+        if (values != null && values.length != 1) throw new IllegalArgumentException(Messages.ParameterDuplicate());
         if (getDependencies().isEmpty()) return values == null ? getDefaultParameterValue() : createValue(values[0]);
         Job<?, ?> job = request.findAncestorObject(Job.class);
         java.util.Map<String, String> submitted = new java.util.HashMap<>();
@@ -357,7 +357,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
             for (ParameterDefinition definition : property.getParameterDefinitions()) {
                 String[] raw = request.getParameterValues(definition.getName());
                 if (raw != null) {
-                    if (raw.length != 1) throw new IllegalArgumentException("参数只能提交一次");
+                    if (raw.length != 1) throw new IllegalArgumentException(Messages.ParameterDuplicate());
                     submitted.put(definition.getName(), raw[0]);
                 }
             }
@@ -367,7 +367,8 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
     @Override
     public StringParameterValue createValue(hudson.cli.CLICommand command, String value) {
         if (getDependencies().isEmpty()) return createValue(value);
-        if (!(command instanceof hudson.cli.BuildCommand build)) throw new IllegalArgumentException("联动参数仅支持 build 命令");
+        if (!(command instanceof hudson.cli.BuildCommand build))
+            throw new IllegalArgumentException(Messages.CliBuildOnly());
         return contextualValue(build.job, build.parameters == null ? java.util.Map.of() : build.parameters, value);
     }
 
@@ -464,7 +465,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
                 RestOptionSource.origin(uri);
                 if (uri.getRawQuery() != null
                         || !(uri.getPath().isEmpty() || uri.getPath().equals("/")))
-                    throw new IllegalArgumentException("每行仅填写协议、主机和端口，不包含路径或查询参数");
+                    throw new IllegalArgumentException(Messages.OriginFormat());
             }
             allowedRestOrigins = normalized;
         }
@@ -475,7 +476,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
             try {
                 setAllowedRestOrigins(json.optString("allowedRestOrigins", ""));
             } catch (IllegalArgumentException e) {
-                throw new FormException("REST 地址授权格式无效", "allowedRestOrigins");
+                throw new FormException(Messages.OriginsInvalid(), "allowedRestOrigins");
             }
             save();
             return true;
@@ -498,14 +499,14 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
                 if (refresh) parameter.clearRestCache();
                 java.util.Map<String, String> submitted = new java.util.HashMap<>();
                 if (parents != null && !parents.isBlank()) {
-                    if (parents.length() > 32768) throw new IllegalArgumentException("上级参数数据过长");
+                    if (parents.length() > 32768) throw new IllegalArgumentException(Messages.ParentsLength());
                     JSONObject values = JSONObject.fromObject(parents);
-                    if (values.size() > 32) throw new IllegalArgumentException("上级参数过多");
+                    if (values.size() > 32) throw new IllegalArgumentException(Messages.ParentsCount());
                     for (Object rawEntry : values.entrySet()) {
                         java.util.Map.Entry<?, ?> entry = (java.util.Map.Entry<?, ?>) rawEntry;
                         Object value = entry.getValue();
                         if (!(value instanceof String text) || text.length() > 2048)
-                            throw new IllegalArgumentException("上级参数格式无效");
+                            throw new IllegalArgumentException(Messages.ParentsFormat());
                         submitted.put(entry.getKey().toString(), text);
                     }
                 }
@@ -513,14 +514,14 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
                 result.put("options", net.sf.json.JSONArray.fromObject(OptionCodec.toJson(resolved)));
                 result.put("defaultValue", parameter.defaultFor(resolved));
             } catch (IllegalArgumentException e) {
-                result.put("error", "选项暂不可用，请检查数据源配置后重试");
+                result.put("error", Messages.OptionsUnavailable());
             }
             return HttpResponses.okJSON(result);
         }
 
         @Override
         public String getDisplayName() {
-            return "Smart Select Parameter (可搜索单选/多选)";
+            return Messages.DisplayName();
         }
 
         @POST
@@ -532,7 +533,7 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
             }
             try {
                 List<String> parsed = SelectionCodec.choicesFrom(value);
-                return parsed.isEmpty() ? FormValidation.error("请至少配置一个选项") : FormValidation.ok();
+                return parsed.isEmpty() ? FormValidation.error(Messages.ChoicesRequired()) : FormValidation.ok();
             } catch (IllegalArgumentException e) {
                 return FormValidation.error(e.getMessage());
             }

@@ -18,7 +18,7 @@ smart-select-parameter-plugin
 
 Smart Select Parameter offers compact searchable single/multiple selection, separate labels and values, optional administrator-approved REST GET sources and validated cascades. It uses no third-party frontend library and declares no additional runtime plugin dependency. Form/API/CLI submissions validate actual parent context on the controller. List rendering is paged; select-all includes all matching choices.
 
-The scope is data-only choices, rather than a general Groovy/rich-HTML parameter engine. Values remain ordinary strings. English documentation is included; the current UI is predominantly Simplified Chinese. SECURITY.md documents important trust boundaries.
+The scope is data-only choices, rather than a general Groovy/rich-HTML parameter engine. Values remain ordinary strings. English is the default for the complete UI; Simplified Chinese translations follow the Jenkins request locale. SECURITY.md documents important trust boundaries.
 
 ## GitHub and Jenkins project users
 
