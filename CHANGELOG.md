@@ -10,6 +10,8 @@
 - Add official Jenkins security scanning, future hosting-team CODEOWNERS and Java 25 CI coverage; use a theme-aware popup shadow.
 - Enforce formatting rather than skipping it. Existing deployed local compatibility builds are not changed.
 
+- Protect choices validation with POST/CSRF enforcement and job configuration permission (administrator permission outside a job context).
+
 ## Local milestones
 
 1.0.1 targets Jenkins 2.547 and a matching test BOM. 1.0.0 introduced validated cascades, bounded list pages, keyboard and retry handling. 0.2.0 added label/value choices and REST sources. 0.1.0 provided the base searchable single/multiple selection.

@@ -18,7 +18,7 @@
     </select>
   </f:entry>
   <f:entry title="${%Choices}" description="每行一个选项；在 Jenkinsfile 中也可使用字符串数组。选项不允许包含逗号。">
-    <f:textarea name="parameter.choices" value="${instance.choicesText}" />
+    <f:textarea checkMethod="post" name="parameter.choices" value="${instance.choicesText}" />
   </f:entry>
   <f:entry title="${%Default values}" description="多个默认值使用英文逗号分隔；单选时只填写一个。">
     <f:textbox name="parameter.defaultValues" value="${instance.defaultValuesText}" />

@@ -8,10 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hudson.cli.CLICommandInvoker;
 import hudson.model.FreeStyleProject;
+import hudson.model.Item;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import java.net.URL;
 import java.util.List;
+import jenkins.model.Jenkins;
 import org.htmlunit.HttpMethod;
 import org.htmlunit.WebRequest;
 import org.htmlunit.html.HtmlButton;
@@ -40,6 +42,39 @@ public class SmartSelectJenkinsTest {
         parameter.setDefaultValues("vehicle");
         parameter.setDescription("选择服务 <安全文本>");
         return parameter;
+    }
+
+    @Test
+    public void choicesValidationRequiresProtectedConfigurationAccess() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject();
+        jenkins.jenkins.setSecurityRealm(jenkins.createDummySecurityRealm());
+        jenkins.jenkins.setAuthorizationStrategy(new org.jvnet.hudson.test.MockAuthorizationStrategy()
+                .grant(Jenkins.READ, Item.READ)
+                .everywhere()
+                .to("reader", "configurer")
+                .grant(Item.CONFIGURE)
+                .everywhere()
+                .to("configurer"));
+        String endpoint = project.getUrl()
+                + "descriptorByName/io.jenkins.plugins.smartselect.SmartSelectParameterDefinition/checkChoices";
+        try (JenkinsRule.WebClient client = jenkins.createWebClient().login("configurer")) {
+            client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+            assertTrue(client.goTo(endpoint + "?value=one").getWebResponse().getStatusCode() >= 400);
+            WebRequest request = new WebRequest(new URL(jenkins.getURL(), endpoint), HttpMethod.POST);
+            request.setRequestParameters(List.of(new NameValuePair("value", "one")));
+            assertEquals(403, client.getPage(request).getWebResponse().getStatusCode());
+            assertEquals(
+                    200,
+                    client.getPage(client.addCrumb(request)).getWebResponse().getStatusCode());
+        }
+        try (JenkinsRule.WebClient client = jenkins.createWebClient().login("reader")) {
+            client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+            WebRequest request = new WebRequest(new URL(jenkins.getURL(), endpoint), HttpMethod.POST);
+            request.setRequestParameters(List.of(new NameValuePair("value", "one")));
+            assertEquals(
+                    403,
+                    client.getPage(client.addCrumb(request)).getWebResponse().getStatusCode());
+        }
     }
 
     @Test

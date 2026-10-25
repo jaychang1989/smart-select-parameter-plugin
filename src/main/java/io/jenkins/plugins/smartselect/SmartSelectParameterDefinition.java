@@ -23,6 +23,7 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.interceptor.RequirePOST;
+import org.kohsuke.stapler.verb.POST;
 
 /** A build parameter that selects zero or more known choices in a searchable dropdown. */
 public class SmartSelectParameterDefinition extends ParameterDefinition {
@@ -522,7 +523,13 @@ public class SmartSelectParameterDefinition extends ParameterDefinition {
             return "Smart Select Parameter (可搜索单选/多选)";
         }
 
-        public FormValidation doCheckChoices(@QueryParameter String value) {
+        @POST
+        public FormValidation doCheckChoices(@AncestorInPath Item item, @QueryParameter String value) {
+            if (item == null) {
+                Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            } else {
+                item.checkPermission(Item.CONFIGURE);
+            }
             try {
                 List<String> parsed = SelectionCodec.choicesFrom(value);
                 return parsed.isEmpty() ? FormValidation.error("请至少配置一个选项") : FormValidation.ok();
