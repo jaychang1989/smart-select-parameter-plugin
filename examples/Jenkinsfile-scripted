@@ -1,0 +1,8 @@
+// Scripted Pipeline: this replaces the job's property list. Preserve any other properties you need.
+properties([
+    parameters([
+        smartSelect(name: 'ENV', mode: 'SINGLE', choices: ['dev', 'pre', 'release'], defaultValues: 'pre'),
+        smartSelect(name: 'SERVICES', mode: 'MULTI', choices: ['price', 'vehicle', 'admin'])
+    ])
+])
+echo "ENV=${params.ENV}; SERVICES=${params.SERVICES}"

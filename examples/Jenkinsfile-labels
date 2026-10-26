@@ -1,0 +1,15 @@
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'SERVICES', mode: 'MULTI', searchable: true,
+            options: [[value: 'price', label: 'Quote service'],
+                      [value: 'vehicle', label: 'Vehicle service'],
+                      [value: 'admin', label: 'Administration service']],
+            defaultValues: ['price'])
+    }
+    stages {
+        stage('Read stable values') {
+            steps { echo "SERVICES=${params.SERVICES}" }
+        }
+    }
+}

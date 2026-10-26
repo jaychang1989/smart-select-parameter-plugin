@@ -1,0 +1,15 @@
+// Replace and authorize this origin before using this example.
+// Expected response: {"data":{"items":[{"value":"price","label":"Quote service"}]}}
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'SERVICES', mode: 'MULTI', searchable: true,
+            restUrl: 'https://services.example.com/service-catalog',
+            restItemsPath: 'data.items', cacheSeconds: 0)
+    }
+    stages {
+        stage('Read remote values') {
+            steps { echo "SERVICES=${params.SERVICES}" }
+        }
+    }
+}

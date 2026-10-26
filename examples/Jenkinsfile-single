@@ -1,0 +1,14 @@
+// Standalone declarative Pipeline: no agent or external service required.
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'ENV', mode: 'SINGLE', searchable: false,
+            choices: ['dev', 'pre', 'release'], defaultValues: 'pre',
+            description: 'Choose one environment')
+    }
+    stages {
+        stage('Read environment') {
+            steps { echo "ENV=${params.ENV}" }
+        }
+    }
+}

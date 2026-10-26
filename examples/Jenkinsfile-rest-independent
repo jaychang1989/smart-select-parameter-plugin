@@ -1,0 +1,14 @@
+// Replace and authorize this origin in Manage Jenkins -> System before using this example.
+// Expected response: ["price", "vehicle", "admin"]
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'SERVICES', mode: 'MULTI', searchable: true,
+            restUrl: 'https://services.example.com/services', cacheSeconds: 30)
+    }
+    stages {
+        stage('Read remote selection') {
+            steps { echo "SERVICES=${params.SERVICES}" }
+        }
+    }
+}

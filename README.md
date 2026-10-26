@@ -8,6 +8,8 @@ Compact searchable single- and multi-select Jenkins build parameters with option
 
 [中文说明](README.zh-CN.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Publication checklist](publishing/README.md)
 
+**Start here:** [Detailed usage guide: 10 scenarios](docs/usage-examples.md) · [Complete Jenkinsfile examples](examples/README.md) · [中文详细用法](docs/usage-examples.zh-CN.md). Includes UI setup, static single/multiple selection, labels, Scripted Pipeline, REST arrays, multiple parents, three-level cascading, and API/CLI submissions, with expected results and troubleshooting.
+
 ## Features
 
 - Single/multiple selection; search by label or value; filtered select-all and clear.

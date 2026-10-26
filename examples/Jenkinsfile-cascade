@@ -1,0 +1,17 @@
+// Replace and authorize this origin first. Keep placeholder URLs single-quoted.
+// Both endpoints return a root array of strings or value/label objects.
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'ENV', mode: 'SINGLE', choices: ['dev', 'pre'], defaultValues: 'pre')
+        smartSelect(name: 'PROJECT', mode: 'SINGLE', dependsOn: 'ENV',
+            restUrl: 'https://services.example.com/projects?env=${ENV}')
+        smartSelect(name: 'SERVICES', mode: 'MULTI', dependsOn: 'ENV,PROJECT',
+            restUrl: 'https://services.example.com/services?env=${ENV}&project=${PROJECT}')
+    }
+    stages {
+        stage('Read cascade') {
+            steps { echo "ENV=${params.ENV}; PROJECT=${params.PROJECT}; SERVICES=${params.SERVICES}" }
+        }
+    }
+}

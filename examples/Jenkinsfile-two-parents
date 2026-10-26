@@ -1,0 +1,17 @@
+// Replace and authorize this origin first. Keep placeholder URLs single-quoted.
+// Expected response: {"data":{"items":[{"value":"price","label":"Quote service"}]}}
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'ENV', mode: 'SINGLE', choices: ['dev', 'pre'], defaultValues: 'pre')
+        smartSelect(name: 'REGION', mode: 'SINGLE', choices: ['north', 'south'], defaultValues: 'north')
+        smartSelect(name: 'SERVICES', mode: 'MULTI', dependsOn: 'ENV,REGION',
+            restUrl: 'https://services.example.com/services?env=${ENV}&region=${REGION}',
+            restItemsPath: 'data.items')
+    }
+    stages {
+        stage('Read combined selection') {
+            steps { echo "ENV=${params.ENV}; REGION=${params.REGION}; SERVICES=${params.SERVICES}" }
+        }
+    }
+}

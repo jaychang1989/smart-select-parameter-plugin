@@ -1,0 +1,21 @@
+pipeline {
+    agent none
+    parameters {
+        smartSelect(name: 'SERVICES', mode: 'MULTI', searchable: true,
+            choices: ['price', 'vehicle', 'admin'], defaultValues: ['price', 'vehicle'])
+    }
+    stages {
+        stage('Read services') {
+            steps {
+                script {
+                    def selected = (params.SERVICES ?: '').tokenize(',')
+                    if (selected.isEmpty()) {
+                        echo 'No services selected; skipping this example stage.'
+                    } else {
+                        selected.each { service -> echo "Selected service: ${service}" }
+                    }
+                }
+            }
+        }
+    }
+}
