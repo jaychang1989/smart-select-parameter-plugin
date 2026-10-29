@@ -9,14 +9,14 @@
       <input type="hidden" name="name" value="${it.name}" />
       <input type="hidden" name="value" class="smart-select-value" value="${smartSelectView.defaultValue}" />
       <div class="smart-select-widget">
-        <button type="button" class="smart-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <button type="button" class="jenkins-button smart-select-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="smart-select-summary">${%Placeholder}</span>
-          <span class="smart-select-chevron" aria-hidden="true">⌄</span>
+          <span class="smart-select-chevron" aria-hidden="true">▾</span>
         </button>
         <div class="smart-select-popup" hidden="hidden">
           <j:if test="${it.searchable}">
             <div class="smart-select-search-wrap">
-              <input type="search" class="smart-select-search" placeholder="${%SearchPlaceholder}" aria-label="${%SearchLabel}" autocomplete="off" />
+              <input type="search" class="jenkins-input smart-select-search" placeholder="${%SearchPlaceholder}" aria-label="${%SearchLabel}" autocomplete="off" />
             </div>
           </j:if>
           <j:if test="${it.multi}">

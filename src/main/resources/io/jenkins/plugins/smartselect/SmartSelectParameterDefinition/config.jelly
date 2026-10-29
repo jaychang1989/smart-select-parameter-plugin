@@ -4,6 +4,7 @@
     <f:textbox name="parameter.name" value="${instance.name}" />
   </f:entry>
   <f:entry title="${%Mode}">
+    <div class="jenkins-select">
     <select name="parameter.mode" class="jenkins-select__input">
       <j:choose>
         <j:when test="${instance!=null &amp;&amp; instance.mode=='SINGLE'}">
@@ -16,30 +17,31 @@
         </j:otherwise>
       </j:choose>
     </select>
+    </div>
   </f:entry>
-  <f:entry title="${%Choices}" description="${%ChoicesHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/choices.html" title="${%Choices}" description="${%ChoicesHelp}">
     <f:textarea checkMethod="post" name="parameter.choices" value="${instance.choicesText}" />
   </f:entry>
-  <f:entry title="${%DefaultValues}" description="${%DefaultsHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/defaultValues.html" title="${%DefaultValues}" description="${%DefaultsHelp}">
     <f:textbox name="parameter.defaultValues" value="${instance.defaultValuesText}" />
   </f:entry>
-  <f:entry title="${%Options}" description="${%OptionsHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/options.html" title="${%Options}" description="${%OptionsHelp}">
     <f:textarea name="parameter.options" value="${instance.optionsText}" />
   </f:entry>
-  <f:entry title="${%RestUrl}" description="${%RestUrlHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/restUrl.html" title="${%RestUrl}" description="${%RestUrlHelp}">
     <f:textbox name="parameter.restUrl" value="${instance.restUrl}" />
   </f:entry>
-  <f:entry title="${%ItemsPath}" description="${%ItemsPathHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/restItemsPath.html" title="${%ItemsPath}" description="${%ItemsPathHelp}">
     <f:textbox name="parameter.restItemsPath" value="${instance.restItemsPath}" />
   </f:entry>
-  <f:entry title="${%DependsOn}" description="${%DependsOnHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/dependsOn.html" title="${%DependsOn}" description="${%DependsOnHelp}">
     <f:textbox name="parameter.dependsOn" value="${instance.dependsOn}" />
   </f:entry>
-  <f:entry title="${%Token}" description="${%TokenHelp}">
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/restToken.html" title="${%Token}" description="${%TokenHelp}">
     <f:password name="parameter.restToken" value="${instance.restToken}" />
   </f:entry>
-  <f:entry title="${%CacheSeconds}" description="${%CacheHelp}">
-    <f:number name="parameter.cacheSeconds" value="${instance==null ? 30 : instance.cacheSeconds}" min="0" max="300" />
+  <f:entry help="${rootURL}/plugin/smart-select-parameter/help/cacheSeconds.html" title="${%CacheSeconds}" description="${%CacheHelp}">
+    <f:number name="parameter.cacheSeconds" value="${instance.cacheSeconds}" default="30" min="0" max="300" />
   </f:entry>
   <f:entry title="${%Searchable}">
     <f:checkbox name="parameter.searchable" checked="${instance==null || instance.searchable}" />

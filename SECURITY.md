@@ -14,6 +14,8 @@ Do not report exploits or credentials in public issues. Use the [Jenkins private
 - Submitted form/API/CLI selections and actual cascade parent context are validated on the controller. Cycles are rejected and only query substitutions are supported. Sensitive/complex parent objects are rejected.
 - Labels are escaped by Jelly or assigned through textContent, not evaluated as HTML or Groovy.
 
+The origin allowlist limits controller-side requests made by this plugin when job configurators can edit parameters but do not have administrator approval to contact arbitrary origins. It is not a Jenkins-wide network sandbox: users who can run unrestricted Pipelines may make their own network requests, including through an input step. The control therefore protects this particular controller-side fetch path and its credentials, not against a trusted Pipeline author. Administrators must balance that boundary against the operational cost of approving new origins.
+
 ## Limits and failures
 
 Bodies are capped at 1 MiB and 2,000 validated choices. Connect/read timeouts are 3 seconds each, plus a 5-second body-reading deadline. The browser stops waiting after 10 seconds. These are per-request limits, not a guaranteed total deadline across all dependency levels.

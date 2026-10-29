@@ -61,7 +61,7 @@ class LocalizationJenkinsTest {
                 HtmlButton trigger = page.getFirstByXPath("//button[contains(@class,'smart-select-trigger')]");
                 assertEquals(
                         chinese ? "请选择" : "Select...",
-                        trigger.asNormalizedText().replace("⌄", "").trim());
+                        trigger.asNormalizedText().replace("▾", "").trim());
                 assertTrue(page.asNormalizedText().contains(chinese ? "数据源或默认值" : "data source or default values"));
                 if (!chinese) assertFalse(page.asNormalizedText().matches("(?s).*\\p{IsHan}.*"));
                 trigger.click();
