@@ -6,7 +6,6 @@
 
   function init(widget) {
     if (widget.dataset.smartSelectReady === "true") return;
-    widget.dataset.smartSelectReady = "true";
 
     // Rendered by Jenkins for the current request locale; English is the fallback.
     const message = (key, fallback, ...args) =>
@@ -20,6 +19,12 @@
     const count = widget.querySelector(".smart-select-count");
     const empty = widget.querySelector(".smart-select-empty");
     const container = widget.querySelector('.smart-select-options');
+    const refresh = widget.querySelector('.smart-select-refresh');
+    const status = widget.querySelector('.smart-select-error');
+    // Jenkins may expose a widget while its HTML is still being inserted.
+    if (!hidden || !trigger || !popup || !summary || !empty || !container || !status
+        || (widget.dataset.remote === 'true' && !refresh)) return;
+    widget.dataset.smartSelectReady = "true";
     const pagination = widget.querySelector('.smart-select-pagination');
     const previousPage = widget.querySelector('.smart-select-previous');
     const nextPage = widget.querySelector('.smart-select-next');
@@ -170,8 +175,6 @@
     }
     all.forEach(bindOption);
 
-    const refresh = widget.querySelector('.smart-select-refresh');
-    const status = widget.querySelector('.smart-select-error');
     const form = widget.closest?.('form');
     let requestSequence = 0;
     let requestController;
@@ -364,12 +367,13 @@
   // Jenkins can insert parameter form fragments asynchronously.
   const observer = new MutationObserver((mutations) => {
     if (mutations.some((mutation) =>
+      mutation.addedNodes.length && (mutation.target.closest?.('.smart-select-parameter') ||
       Array.from(mutation.addedNodes).some((node) => node.nodeType === 1 &&
-        (node.matches?.(".smart-select-parameter") || node.querySelector?.(".smart-select-parameter"))))) {
+        (node.matches?.(".smart-select-parameter") || node.querySelector?.(".smart-select-parameter")))))) {
       initAll();
     }
   });
   const startObserving = () => observer.observe(document.body, { childList: true, subtree: true });
-  if (document.body) startObserving();
-  else document.addEventListener("DOMContentLoaded", startObserving, { once: true });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startObserving, { once: true });
+  else if (document.body) startObserving();
 })();

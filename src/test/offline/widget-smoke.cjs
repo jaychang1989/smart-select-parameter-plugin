@@ -49,6 +49,7 @@ function makeWidget(mode, defaults, values) {
   const search = new FakeElement();
   const count = new FakeElement();
   const empty = new FakeElement(); empty.hidden = true;
+  const status = new FakeElement();
   const selectAll = new FakeElement();
   const clear = new FakeElement();
   const container = new FakeElement();
@@ -78,6 +79,7 @@ function makeWidget(mode, defaults, values) {
     '.smart-select-search': search,
     '.smart-select-count': count,
     '.smart-select-empty': empty,
+    '.smart-select-error': status,
     '.smart-select-select-all': mode === 'MULTI' ? selectAll : null,
     '.smart-select-clear': mode === 'MULTI' ? clear : null,
   };
@@ -93,20 +95,33 @@ const single = makeWidget('SINGLE', 'pre', ['dev', 'pre', 'release']);
 const labeled = makeWidget('MULTI', 'price', [{ value: 'price', label: '报价服务' }, { value: 'admin', label: '管理服务' }]);
 const large = makeWidget('MULTI', '', Array.from({length: 2000}, (_, i) => `service-${i}`));
 const noSearch = makeWidget('SINGLE', 'dev', ['dev', 'release']);
+const partial = makeWidget('MULTI', '', ['alpha', 'beta']);
+let partialComplete = false;
+const partialQuery = partial.el.querySelector;
+partial.el.querySelector = selector => selector === '.smart-select-empty' && !partialComplete ? null : partialQuery(selector);
+partial.el.closest = selector => selector === '.smart-select-parameter' ? partial.el : null;
 const noSearchQuery = noSearch.el.querySelector;
 noSearch.el.querySelector = selector => selector === '.smart-select-search' ? null : noSearchQuery(selector);
 const document = {
   readyState: 'complete',
   body: {},
-  querySelectorAll: (selector) => selector === '.smart-select-parameter' ? [multi.el, single.el, labeled.el, large.el, noSearch.el] : [],
+  querySelectorAll: (selector) => selector === '.smart-select-parameter' ? [multi.el, single.el, labeled.el, large.el, noSearch.el, partial.el] : [],
   addEventListener: () => {}
 };
-class FakeObserver { observe() {} }
+let observerCallback;
+class FakeObserver { constructor(callback) { observerCallback = callback; } observe() {} }
 class FakeEvent { constructor(type) { this.type = type; } }
 const file = path.join(__dirname, '../../main/resources/io/jenkins/plugins/smartselect/smart-select.js');
 vm.runInNewContext(fs.readFileSync(file, 'utf8'), {
   document, MutationObserver: FakeObserver, Event: FakeEvent,
 }, { filename: file });
+
+assert.notEqual(partial.el.dataset.smartSelectReady, 'true', 'An incomplete widget must wait for its remaining elements');
+partialComplete = true;
+observerCallback([{target: partial.el, addedNodes: [partial.empty]}]);
+assert.equal(partial.el.dataset.smartSelectReady, 'true', 'A completed fragment should initialize when children arrive');
+partial.options[0].click();
+assert.equal(partial.value.value, 'alpha', 'An asynchronously completed widget must accept selections');
 
 assert.equal(multi.value.value, 'price,vehicle');
 assert.equal(multi.summary.textContent, 'price, vehicle');
