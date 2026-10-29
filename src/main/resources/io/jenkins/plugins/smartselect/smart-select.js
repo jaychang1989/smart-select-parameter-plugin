@@ -60,6 +60,21 @@
     if (initialData) all = JSON.parse(initialData.value).map(makeOption);
     let byValue = new Map(all.map((element) => [element.dataset.value, element]));
     const labelFor = (value) => byValue.get(value)?.querySelector('.smart-select-label')?.textContent || value;
+    function updateWidth() {
+      try {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) return;
+        context.font = getComputedStyle(trigger).font || '14px sans-serif';
+        const width = all.reduce((longest, option) =>
+          Math.max(longest, context.measureText(labelFor(option.dataset.value)).width), 0);
+        // Include checkbox, spacing and scrollbar; CSS bounds the result to available space.
+        widget.style.width = `${Math.max(280, Math.ceil(width + 88))}px`;
+      } catch (_) {
+        // Keep the CSS default in environments without canvas support.
+      }
+    }
+    updateWidth();
     const selected = new Set(
       (hidden.value || "").split(",").map((v) => v.trim()).filter((v) => byValue.has(v))
     );
@@ -255,6 +270,7 @@
         next.forEach(bindOption);
         all = next;
         byValue = new Map(all.map(option => [option.dataset.value, option]));
+        updateWidth();
         for (const value of selected) if (!byValue.has(value)) selected.delete(value);
         if (initialSelection && dependencies.length && data.defaultValue) {
           data.defaultValue.split(',').filter(value => byValue.has(value)).forEach(value => selected.add(value));

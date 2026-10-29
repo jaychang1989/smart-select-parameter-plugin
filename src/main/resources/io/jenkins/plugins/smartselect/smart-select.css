@@ -1,5 +1,5 @@
 /* Neutral, compact styling; intentionally inherits Jenkins fonts and theme colors. */
-.smart-select-parameter { width: 100%; max-width: 640px; }
+.smart-select-parameter { width: 280px; max-width: min(100%, calc(100vw - 32px)); }
 .smart-select-widget { position: relative; font: inherit; }
 .smart-select-widget button { font: inherit; cursor: pointer; }
 .smart-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }

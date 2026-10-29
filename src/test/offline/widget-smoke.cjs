@@ -10,6 +10,7 @@ class FakeElement {
     this.hidden = false;
     this.textContent = '';
     this.dataset = {};
+    this.style = {};
     this.attributes = {};
     this.children = [];
     this.handlers = new Map();
@@ -94,6 +95,7 @@ const multi = makeWidget('MULTI', 'price,vehicle', ['admin', 'price', 'vehicle',
 const single = makeWidget('SINGLE', 'pre', ['dev', 'pre', 'release']);
 const labeled = makeWidget('MULTI', 'price', [{ value: 'price', label: '报价服务' }, { value: 'admin', label: '管理服务' }]);
 const large = makeWidget('MULTI', '', Array.from({length: 2000}, (_, i) => `service-${i}`));
+const wide = makeWidget('MULTI', '', ['short', 'a'.repeat(90)]);
 const noSearch = makeWidget('SINGLE', 'dev', ['dev', 'release']);
 const partial = makeWidget('MULTI', '', ['alpha', 'beta']);
 let partialComplete = false;
@@ -105,7 +107,8 @@ noSearch.el.querySelector = selector => selector === '.smart-select-search' ? nu
 const document = {
   readyState: 'complete',
   body: {},
-  querySelectorAll: (selector) => selector === '.smart-select-parameter' ? [multi.el, single.el, labeled.el, large.el, noSearch.el, partial.el] : [],
+  querySelectorAll: (selector) => selector === '.smart-select-parameter' ? [multi.el, single.el, labeled.el, large.el, noSearch.el, partial.el, wide.el] : [],
+  createElement: tag => tag === 'canvas' ? { getContext: () => ({ measureText: text => ({ width: text.length * 10 }) }) } : new FakeElement(),
   addEventListener: () => {}
 };
 let observerCallback;
@@ -113,8 +116,11 @@ class FakeObserver { constructor(callback) { observerCallback = callback; } obse
 class FakeEvent { constructor(type) { this.type = type; } }
 const file = path.join(__dirname, '../../main/resources/io/jenkins/plugins/smartselect/smart-select.js');
 vm.runInNewContext(fs.readFileSync(file, 'utf8'), {
-  document, MutationObserver: FakeObserver, Event: FakeEvent,
+  document, MutationObserver: FakeObserver, Event: FakeEvent, getComputedStyle: () => ({ font: '14px Arial' }),
 }, { filename: file });
+
+assert.ok(parseFloat(wide.el.style.width) > 640, 'A long option should expand the desired widget width');
+assert.ok(parseFloat(multi.el.style.width) < parseFloat(wide.el.style.width), 'Short and long options should produce different widths');
 
 assert.notEqual(partial.el.dataset.smartSelectReady, 'true', 'An incomplete widget must wait for its remaining elements');
 partialComplete = true;
