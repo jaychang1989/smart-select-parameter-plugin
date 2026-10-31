@@ -5,9 +5,9 @@
 .smart-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
 .smart-select-trigger:focus-visible, .smart-select-option:focus-visible,
 .smart-select-search:focus-visible { outline: 2px solid var(--focus-input-border, #2563eb); outline-offset: 2px; }
-.smart-select-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.smart-select-summary { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
 .smart-select-summary.is-placeholder { color: var(--text-color-secondary, #64748b); }
-.smart-select-chevron { flex: none; font-size: 20px; line-height: 1; color: var(--text-color-secondary, #64748b); }
+.smart-select-chevron { flex: none; display: inline-flex; align-items: center; color: var(--text-color-secondary, #64748b); }
 .smart-select-popup {
   position: absolute; z-index: 999; inset-inline: 0; top: calc(100% + 5px);
   background: var(--background, #fff); color: var(--text-color, #1f2937);

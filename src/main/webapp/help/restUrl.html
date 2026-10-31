@@ -1,1 +1,3 @@
-<div>Optional HTTP or HTTPS URL returning JSON. The controller administrator must first authorize its origin in Manage Jenkins → System. The controller fetches the URL; failed reads do not fall back to static choices.</div>
+<div>Enter an HTTP or HTTPS URL that returns a JSON array of strings or value/label objects. For example:
+<pre>https://services.example.com/options</pre>
+The Jenkins controller must be able to reach the service. An administrator must authorize its origin under Manage Jenkins → System before the request is allowed. Remote choices replace static choices; if the source fails, the parameter does not fall back to static choices. Use HTTPS for sensitive data.</div>

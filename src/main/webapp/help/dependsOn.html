@@ -1,1 +1,3 @@
-<div>Enter parent parameter names separated by commas. Each declared parent must occur as a placeholder in the URL query value, for example ?env=${ENV}. Changing a parent clears previous selections.</div>
+<div>Enter parent parameter names separated by commas, for example <code>ENV,REGION</code>. Each declared parent must occur as a placeholder in a URL query value:
+<pre>https://services.example.com/options?env=${ENV}&amp;region=${REGION}</pre>
+The controller URL-encodes the selected parent values before fetching the options. Changing a parent clears the previous selection. Hostnames and paths cannot contain parent placeholders.</div>

@@ -24,6 +24,34 @@ public class RestOptionSourceTest {
             requests.incrementAndGet();
             String path = exchange.getRequestURI().getPath();
             int status = 200;
+            if (path.equals("/slow-body")) {
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, 0);
+                try (var output = exchange.getResponseBody()) {
+                    output.write('[');
+                    output.flush();
+                    Thread.sleep(4000);
+                    output.write(']');
+                } catch (java.io.IOException ignored) {
+                    // The client may close the connection on timeout.
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return;
+            }
+            if (path.equals("/chunked-big")) {
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, 0);
+                try (var output = exchange.getResponseBody()) {
+                    output.write("x".repeat(1_048_577).getBytes(StandardCharsets.UTF_8));
+                } catch (java.io.IOException ignored) {
+                    // A client enforcing the size limit may close the connection early.
+                }
+                return;
+            }
+            if (path.equals("/github-raw")
+                    && !exchange.getRequestHeaders().getFirst("Accept").contains("application/vnd.github.raw+json"))
+                status = 406;
             String body = "[{\"value\":\"price\",\"label\":\"报价服务\"}]";
             if (path.equals("/nested")) body = "{\"data\":{\"items\":" + body + "}}";
             if (path.equals("/bad")) body = "not-json";
@@ -42,7 +70,12 @@ public class RestOptionSourceTest {
                     Thread.currentThread().interrupt();
                 }
             byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+            exchange.getResponseHeaders()
+                    .set(
+                            "Content-Type",
+                            path.equals("/github-raw")
+                                    ? "application/vnd.github.raw+json"
+                                    : "application/json; charset=utf-8");
             exchange.sendResponseHeaders(status, bytes.length);
             try (var output = exchange.getResponseBody()) {
                 output.write(bytes);
@@ -54,6 +87,15 @@ public class RestOptionSourceTest {
     @AfterEach
     public void stop() {
         server.stop(0);
+    }
+
+    @Test
+    public void requestsGithubRawJson() {
+        assertEquals(
+                "price",
+                RestOptionSource.load(origin + "/github-raw", "", "", origin)
+                        .get(0)
+                        .getValue());
     }
 
     @Test
@@ -103,5 +145,16 @@ public class RestOptionSourceTest {
         assertThrows(IllegalArgumentException.class, () -> RestOptionSource.load(origin + "/slow", "", "", origin));
         long elapsed = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
         assertTrue(elapsed >= 2000 && elapsed < 8000, "Read timeout must be bounded: " + elapsed);
+    }
+
+    @Test
+    public void rejectsOversizedChunkedBodyAndStalledBody() {
+        assertThrows(
+                IllegalArgumentException.class, () -> RestOptionSource.load(origin + "/chunked-big", "", "", origin));
+        long start = System.nanoTime();
+        assertThrows(
+                IllegalArgumentException.class, () -> RestOptionSource.load(origin + "/slow-body", "", "", origin));
+        long elapsed = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+        assertTrue(elapsed >= 2000 && elapsed < 8000, "Stalled body must time out: " + elapsed);
     }
 }

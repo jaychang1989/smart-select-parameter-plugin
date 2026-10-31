@@ -1,1 +1,3 @@
-<div>Leave blank when the response is an array. For an object containing an array, enter a dotted path such as data.items; JSONPath expressions are not supported.</div>
+<div>Leave blank when the response is a root array. For an object containing an array, enter a dotted path. For example, use <code>data.items</code> for:
+<pre>{"data":{"items":[{"value":"price","label":"Quote service"}]}}</pre>
+Only dotted object keys are supported; JSONPath expressions are not evaluated.</div>

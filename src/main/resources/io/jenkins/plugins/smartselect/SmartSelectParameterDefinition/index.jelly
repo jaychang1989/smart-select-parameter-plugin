@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form" xmlns:l="/lib/layout">
   <st:adjunct includes="io.jenkins.plugins.smartselect.smart-select" />
   <j:set var="smartSelectView" value="${it.view}" />
   <j:set var="escapeEntryTitleAndDescription" value="false" />
@@ -9,9 +9,9 @@
       <input type="hidden" name="name" value="${it.name}" />
       <input type="hidden" name="value" class="smart-select-value" value="${smartSelectView.defaultValue}" />
       <div class="smart-select-widget">
-        <button type="button" class="jenkins-button smart-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <button type="button" class="jenkins-input smart-select-trigger" aria-haspopup="listbox" aria-expanded="false">
           <span class="smart-select-summary">${%Placeholder}</span>
-          <span class="smart-select-chevron" aria-hidden="true">▾</span>
+          <span class="smart-select-chevron" aria-hidden="true"><l:icon src="symbol-chevron-down" class="icon-sm" /></span>
         </button>
         <div class="smart-select-popup" hidden="hidden">
           <j:if test="${it.searchable}">

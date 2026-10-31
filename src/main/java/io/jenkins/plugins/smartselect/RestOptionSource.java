@@ -3,13 +3,19 @@ package io.jenkins.plugins.smartselect;
 import hudson.ProxyConfiguration;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -49,34 +55,42 @@ public final class RestOptionSource {
 
     public static List<SelectOption> load(String url, String itemsPath, String token, String allowedOrigins) {
         URI uri = validate(url, allowedOrigins);
-        HttpURLConnection connection = null;
-        try {
-            connection = (HttpURLConnection) ProxyConfiguration.open(uri.toURL());
-            connection.setConnectTimeout(3000);
-            connection.setReadTimeout(3000);
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestProperty("Accept", "application/json");
-            if (token != null && !token.isEmpty()) connection.setRequestProperty("Authorization", "Bearer " + token);
-            if (connection.getResponseCode() != 200) throw new IllegalArgumentException(Messages.RestStatus());
-            String contentType = connection.getContentType();
-            if (contentType == null
-                    || !contentType
-                            .toLowerCase(Locale.ROOT)
-                            .matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?"))
-                throw new IllegalArgumentException(Messages.RestJson());
-            if (connection.getContentLengthLong() > MAX_BYTES) throw new IllegalArgumentException(Messages.RestSize());
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        try (HttpClient client = ProxyConfiguration.newHttpClientBuilder()
+                .connectTimeout(Duration.ofSeconds(3))
+                .followRedirects(HttpClient.Redirect.NEVER)
+                .build()) {
+            HttpRequest.Builder builder = HttpRequest.newBuilder(uri)
+                    .timeout(Duration.ofSeconds(3))
+                    .header("Accept", "application/vnd.github.raw+json, application/json")
+                    .GET();
+            if (token != null && !token.isEmpty()) builder.header("Authorization", "Bearer " + token);
+            HttpResponse<InputStream> response =
+                    client.send(builder.build(), HttpResponse.BodyHandlers.ofInputStream());
             byte[] bytes;
-            try (InputStream input = connection.getInputStream();
+            var executor = Executors.newVirtualThreadPerTaskExecutor();
+            try (InputStream input = response.body();
                     ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                if (response.statusCode() != 200) throw new IllegalArgumentException(Messages.RestStatus());
+                String contentType =
+                        response.headers().firstValue("Content-Type").orElse("");
+                if (!contentType.toLowerCase(Locale.ROOT).matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?"))
+                    throw new IllegalArgumentException(Messages.RestJson());
+                if (response.headers().firstValueAsLong("Content-Length").orElse(-1) > MAX_BYTES)
+                    throw new IllegalArgumentException(Messages.RestSize());
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
                 byte[] buffer = new byte[8192];
-                int count;
-                while ((count = input.read(buffer)) != -1) {
-                    if (output.size() + count > MAX_BYTES || System.nanoTime() > deadline)
-                        throw new IllegalArgumentException(Messages.RestTimeout());
+                while (true) {
+                    long remaining = deadline - System.nanoTime();
+                    if (remaining <= 0) throw new IllegalArgumentException(Messages.RestTimeout());
+                    int count = executor.submit(() -> input.read(buffer))
+                            .get(Math.min(remaining, TimeUnit.SECONDS.toNanos(3)), TimeUnit.NANOSECONDS);
+                    if (count == -1) break;
+                    if (output.size() + count > MAX_BYTES) throw new IllegalArgumentException(Messages.RestSize());
                     output.write(buffer, 0, count);
                 }
                 bytes = output.toByteArray();
+            } finally {
+                executor.shutdownNow();
             }
             JSON json = JSONSerializer.toJSON(new String(bytes, StandardCharsets.UTF_8));
             Object items = json;
@@ -90,11 +104,12 @@ public final class RestOptionSource {
                 }
             }
             return OptionCodec.parse(items);
-        } catch (java.io.IOException | RuntimeException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalArgumentException(Messages.RestRead());
+        } catch (java.io.IOException | ExecutionException | TimeoutException | RuntimeException e) {
             // Never expose endpoint URLs, response bodies, bearer tokens or transport exception details.
             throw new IllegalArgumentException(Messages.RestRead());
-        } finally {
-            if (connection != null) connection.disconnect();
         }
     }
 }
