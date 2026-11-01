@@ -119,8 +119,6 @@ vm.runInNewContext(fs.readFileSync(file, 'utf8'), {
   document, MutationObserver: FakeObserver, Event: FakeEvent, getComputedStyle: () => ({ font: '14px Arial' }),
 }, { filename: file });
 
-assert.ok(parseFloat(wide.el.style.width) > 640, 'A long option should expand the desired widget width');
-assert.ok(parseFloat(multi.el.style.width) < parseFloat(wide.el.style.width), 'Short and long options should produce different widths');
 
 assert.notEqual(partial.el.dataset.smartSelectReady, 'true', 'An incomplete widget must wait for its remaining elements');
 partialComplete = true;

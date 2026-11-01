@@ -30,7 +30,7 @@ public class RestOptionSourceTest {
                 try (var output = exchange.getResponseBody()) {
                     output.write('[');
                     output.flush();
-                    Thread.sleep(4000);
+                    Thread.sleep(6000);
                     output.write(']');
                 } catch (java.io.IOException ignored) {
                     // The client may close the connection on timeout.
@@ -76,6 +76,11 @@ public class RestOptionSourceTest {
                             path.equals("/github-raw")
                                     ? "application/vnd.github.raw+json"
                                     : "application/json; charset=utf-8");
+            if (path.equals("/github-combined"))
+                exchange.getResponseHeaders()
+                        .set("Content-Type", "application/vnd.github.raw+json,application/json; charset=utf-8");
+            if (path.equals("/mixed")) exchange.getResponseHeaders().set("Content-Type", "text/html, application/json");
+            if (path.equals("/jsonp")) exchange.getResponseHeaders().set("Content-Type", "application/jsonp");
             exchange.sendResponseHeaders(status, bytes.length);
             try (var output = exchange.getResponseBody()) {
                 output.write(bytes);
@@ -96,6 +101,17 @@ public class RestOptionSourceTest {
                 RestOptionSource.load(origin + "/github-raw", "", "", origin)
                         .get(0)
                         .getValue());
+    }
+
+    @Test
+    public void acceptsGithubCombinedJsonTypeButRejectsNonJsonTypes() {
+        assertEquals(
+                "price",
+                RestOptionSource.load(origin + "/github-combined", "", "", origin)
+                        .get(0)
+                        .getValue());
+        for (String path : List.of("/mixed", "/jsonp"))
+            assertThrows(IllegalArgumentException.class, () -> RestOptionSource.load(origin + path, "", "", origin));
     }
 
     @Test

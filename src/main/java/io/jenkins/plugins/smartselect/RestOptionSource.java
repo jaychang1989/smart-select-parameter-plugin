@@ -1,7 +1,6 @@
 package io.jenkins.plugins.smartselect;
 
 import hudson.ProxyConfiguration;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -68,27 +67,21 @@ public final class RestOptionSource {
                     client.send(builder.build(), HttpResponse.BodyHandlers.ofInputStream());
             byte[] bytes;
             var executor = Executors.newVirtualThreadPerTaskExecutor();
-            try (InputStream input = response.body();
-                    ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            try (InputStream input = response.body()) {
                 if (response.statusCode() != 200) throw new IllegalArgumentException(Messages.RestStatus());
-                String contentType =
-                        response.headers().firstValue("Content-Type").orElse("");
-                if (!contentType.toLowerCase(Locale.ROOT).matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?"))
+                List<String> contentTypes = response.headers().allValues("Content-Type");
+                if (contentTypes.isEmpty()
+                        || !contentTypes.stream()
+                                .flatMap(value -> Arrays.stream(value.split(",", -1)))
+                                .allMatch(value -> value.trim()
+                                        .toLowerCase(Locale.ROOT)
+                                        .matches("application/(?:json|[a-z0-9.+-]+\\+json)(?:;.*)?")))
                     throw new IllegalArgumentException(Messages.RestJson());
                 if (response.headers().firstValueAsLong("Content-Length").orElse(-1) > MAX_BYTES)
                     throw new IllegalArgumentException(Messages.RestSize());
-                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-                byte[] buffer = new byte[8192];
-                while (true) {
-                    long remaining = deadline - System.nanoTime();
-                    if (remaining <= 0) throw new IllegalArgumentException(Messages.RestTimeout());
-                    int count = executor.submit(() -> input.read(buffer))
-                            .get(Math.min(remaining, TimeUnit.SECONDS.toNanos(3)), TimeUnit.NANOSECONDS);
-                    if (count == -1) break;
-                    if (output.size() + count > MAX_BYTES) throw new IllegalArgumentException(Messages.RestSize());
-                    output.write(buffer, 0, count);
-                }
-                bytes = output.toByteArray();
+                // Keep a body deadline: ofInputStream completes the response at the headers.
+                bytes = executor.submit(() -> input.readNBytes(MAX_BYTES + 1)).get(5, TimeUnit.SECONDS);
+                if (bytes.length > MAX_BYTES) throw new IllegalArgumentException(Messages.RestSize());
             } finally {
                 executor.shutdownNow();
             }

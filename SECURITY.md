@@ -18,7 +18,7 @@ The origin allowlist limits controller-side requests made by this plugin when jo
 
 ## Limits and failures
 
-Bodies are capped at 1 MiB and 2,000 validated choices. Connect/read timeouts are 3 seconds each, plus a 5-second body-reading deadline. The browser stops waiting after 10 seconds. These are per-request limits, not a guaranteed total deadline across all dependency levels.
+Bodies are capped at 1 MiB and 2,000 validated choices. Connection and response-header timeouts are 3 seconds; reading the body has a 5-second deadline. The browser stops waiting after 10 seconds. These are per-request limits, not a guaranteed total deadline across all dependency levels.
 
 A parameter caches one recent context for up to 300 seconds. Cached data may remain valid during upstream changes inside that interval. Manual reload bypasses that parameter's cache. Revoking an origin prevents subsequent cache access. Expired fetch failures never fall back to static choices.
 

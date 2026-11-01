@@ -73,7 +73,7 @@ For this object use `restItemsPath: 'data.items'`; leave it empty for a root arr
 
 REST overrides nonempty `options`, which overrides ordinary `choices`. A failed fetch never falls back to static choices. Unexpired cached data may still be used; expired data is not a fallback. Default cache lifetime is 30 seconds, configurable from 0 through 300. One recent context is cached per parameter. Manual reload bypasses that parameter's cache.
 
-HTTP/HTTPS are supported; HTTP is plaintext, so prefer HTTPS for sensitive sources. Embedded URL credentials, fragments and redirects are rejected. Jenkins proxy settings and normal TLS validation apply. Connect/read timeouts are 3 seconds each, with an additional 5-second body deadline and 1 MiB body limit. The browser stops waiting after 10 seconds.
+HTTP/HTTPS are supported; HTTP is plaintext, so prefer HTTPS for sensitive sources. Embedded URL credentials, fragments and redirects are rejected. Jenkins proxy settings and normal TLS validation apply. Connection and response-header timeouts are 3 seconds; reading the body has a 5-second deadline and 1 MiB body limit. The browser stops waiting after 10 seconds.
 
 An optional bearer token is stored with Jenkins Secret. It is not returned by the options endpoint or rendered in the build-selection page. Never commit a real token to a Jenkinsfile. Re-declaring the parameter in a Pipeline can overwrite UI-managed settings, including its token; administrators must manage these consistently. See [security boundaries](SECURITY.md).
 
